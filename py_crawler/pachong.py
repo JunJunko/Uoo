@@ -6,7 +6,21 @@ import urllib
 import re
 
 
-localCSV = r'D:\tmp\pytmp'
+localCSV = r'..//shares_data//'
+
+
+def getSharesList():
+    url = r'http://quote.eastmoney.com/stocklist.html'
+    request = urllib2.Request(url)
+    response = urllib2.urlopen(request).read()
+
+    r = r'<a target="_blank" href=.*?>.*?\((.*?)\)</a>'
+    code = re.findall(r, response)
+    for i in code:
+        if re.match(r'^0', i) or re.match(r'^6', i):
+            # print i
+            getCsv(str(i))
+    # return code
 
 def getWebData(code):
     url = r'http://quotes.money.163.com/trade/lsjysj_'+code+'.html'
@@ -39,4 +53,5 @@ def getCsv(code):
 
 
 if __name__ == '__main__':
-    print getCsv(str("000150"))
+    # print getCsv(str("000150"))
+    print getSharesList()
