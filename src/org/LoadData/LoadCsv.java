@@ -6,62 +6,65 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import org.tools.MysqlConn;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+
 
 public class LoadCsv {
 	
 	
 	
-	private static void  LoadFileData(String path){   
+	private static void  LoadFileData(String path) throws IOException{   
         // get file list where the path has   
         File file = new File(path);   
         // get the folder list   
-        File[] array = file.listFiles();   
+        File[] array = file.listFiles();  
+        Statement stmt = null;
           
         for(int i=0;i<array.length;i++){   
             if(array[i].isFile()){   
                 // only take file name  
 
-            	StringBuffer result = new StringBuffer();
-                try{
-                    BufferedReader br = new BufferedReader(new FileReader("shares_data//"+array[i].getName()));//构造一个BufferedReader类来读取文件
+            	String result = new String();
+
+                 
+
+						  FileInputStream fis = new FileInputStream("shares_data//"+array[i].getName());   
+						  InputStreamReader isr = new InputStreamReader(fis, "GBK");
+						  
+						  BufferedReader br = new BufferedReader(isr);  
+						
+						
+					
                     String s = null;
-                    while((s = br.readLine())!=null){//使用readLine方法，一次读一行
-                        result.append(System.lineSeparator()+s);
-                        String value = result.toString().replace("\'", "").replace(",",  "\',\'");
-                        
-
-                            String sql = "INSERT INTO getdata VALUES ('"+ value + "\');";
-                            Statement statement = null;
-                            Connection conn = null;
-                            try {
-                                conn = MysqlConn.getConn();
-                                statement = (Statement) conn.createStatement();
-                                int Res = ((java.sql.Statement) statement).executeUpdate(sql);
-                                System.out.println(Res > 0 ? "插入数据成功" : "插入数据失败");
-
-                            } catch (Exception e) { 
-                                e.printStackTrace();
-                            } finally {
-                            	MysqlConn.Realsase(conn, statement);
-                            }
-
-                        }
+                    int rows = 1;
                     
-                    br.close();    
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-                
-            }
-        }
-  
-    }    
-	
+						while((s = br.readLine())!=null){//使用readLine方法，一次读一行
+							
+						    result = (System.lineSeparator()+s);
+						    String value = result.toString().replace("\'", "").replace(",",  "\',\'");
+						    
+						    String sql = "INSERT INTO getdata VALUES ('"+ value + "\');";
+						    System.out.println(rows);
+						    if(rows != 1){
+						        try {
+						        	System.out.println(sql);
+								    org.tools.MysqlConn.Insert(sql);
+							    } catch (IOException e) {
+								// TODO Auto-generated catch block
+								    e.printStackTrace();
+							    }
+						    }
+						    
+						    rows++;
+						                        
+						}
+					 }
+    }  
+       
+}
 	
 //	private static int insert(String student) {
 //	    Connection conn = getConn();
@@ -88,7 +91,12 @@ public class LoadCsv {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		LoadFileData("shares_data//");
+		try {
+			LoadFileData("shares_data//");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

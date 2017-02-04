@@ -1,26 +1,42 @@
 package org.tools;
 
 import java.beans.Statement;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class MysqlConn {
-	public static Connection getConn() {
-	    String driver = "com.mysql.jdbc.Driver";
-	    String url = "jdbc:mysql://192.168.12.111:3306/test?useServerPrepStmts=false&rewriteBatchedStatements=true";
-	    String username = "root";
-	    String password = "infa";
-	    Connection conn = null;
-	    try {
-	        Class.forName(driver); //classLoader,加载对应驱动
-	        conn = (Connection) DriverManager.getConnection(url, username, password);
-	    } catch (ClassNotFoundException e) {
-	        e.printStackTrace();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return conn;
+	
+
+	public static void Insert(String sql) throws IOException {
+		Properties prop = new Properties();
+        InputStream in = MysqlConn.class.getClassLoader().getResourceAsStream(
+                "org//tools//db.properties");
+        prop.load(in);
+        String ip = prop.getProperty("ip");
+//        System.out.println(ip);
+        String username = prop.getProperty("username");
+        String password = prop.getProperty("passwd");
+        String database = prop.getProperty("database");
+        String url = "jdbc:mysql://"+ip+":3306/"+database+"?user="+username+"&password="+password+"&useServerPrepStmts=false&rewriteBatchedStatements=true";
+        System.out.println(url);
+		  Connection conn = null;
+		  java.sql.Statement stmt = null;
+		  try {
+		   Class.forName("com.mysql.jdbc.Driver");
+		   
+		   conn = DriverManager
+		     .getConnection(url);
+		   stmt = conn.createStatement();
+		  
+		  stmt.executeUpdate(sql);
+		  } catch (Exception e) {
+		   e.printStackTrace();
+		  }
 	}
 	
 	public static void Realsase(Connection conn, Statement statement) {
@@ -37,5 +53,11 @@ public class MysqlConn {
             e.printStackTrace();
         }
     }
+	
+	
+//	public static void main(String[] args) throws IOException {
+//		
+//		Insert("1");
+//	}
 
 }

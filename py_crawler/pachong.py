@@ -47,7 +47,7 @@ def getCsv(code):
     else:
         url = r'http://quotes.money.163.com/service/chddata.html?code='+'0'+code+'&start='+getMinDate(code)+'&end='+getMaxDate(code)+'&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'
     data = urllib.urlopen(url).read().replace('None','0')
-    with open(localCSV+'\\'+code+'.csv', 'wb') as f:
+    with open(localCSV+'\\'+code+'.csv', 'w') as f:
         f.write(data)
     return  url
 
