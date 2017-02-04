@@ -1,0 +1,16 @@
+create table getdata (
+data_dt varchar(15),
+shares_code varchar(10),
+shares_name varchar(10),
+end_price DECIMAL(3,2),
+hight DECIMAL(3,2),
+low DECIMAL(3,2),
+begin_prince DECIMAL(3,2),
+qsp varchar(15),
+zde varchar(15),
+zdf varchar(15),
+hsl varchar(15),
+cjl varchar(15),
+cjje varchar(15),
+tot_price DECIMAL(15,3),
+mark_price DECIMAL(15,3));

@@ -21,14 +21,16 @@ def csvAnalytical(code):
     return value
 
 def getDbInfo():
-    data = open(r'D://tmp//pytmp//mysql.json', 'r').read()
+    data = open(r'..//py_config//mysql.json', 'r').read()
     value = json.loads(data)
     return value
 
 def inserData(code):
-    db = MySQLdb.connect(host=getDbInfo()["MYSQL2"][0]["host"],user=getDbInfo()["MYSQL2"][0]["user"],passwd=getDbInfo()["MYSQL2"][0]["passwd"],db=getDbInfo()["MYSQL2"][0]["db"])
+    db = MySQLdb.connect(host=getDbInfo()["MYSQL"][0]["host"],user=getDbInfo()["MYSQL"][0]["user"],passwd=getDbInfo()["MYSQL"][0]["passwd"],db=getDbInfo()["MYSQL"][0]["db"])
     con = db.cursor()
-    sql = r'insert into getdata (data_dt,code,nam,end_price,hight,low,begin_prince,qsp,zde,zdf,hsl,cjl,cjje,tot_price,mark_price) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+
+    sql = r'insert into getdata (data_dt,shares_code,shares_name,end_price,hight,low,begin_prince,qsp,zde,zdf,hsl,cjl,cjje,tot_price,mark_price) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+    # print csvAnalytical(code)
     con.executemany(sql, csvAnalytical(code))
     db.commit()
     con.close()
