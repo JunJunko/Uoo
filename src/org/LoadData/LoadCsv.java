@@ -44,7 +44,7 @@ public class LoadCsv {
                                 int Res = ((java.sql.Statement) statement).executeUpdate(sql);
                                 System.out.println(Res > 0 ? "插入数据成功" : "插入数据失败");
 
-                            } catch (Exception e) {
+                            } catch (Exception e) { 
                                 e.printStackTrace();
                             } finally {
                             	MysqlConn.Realsase(conn, statement);
