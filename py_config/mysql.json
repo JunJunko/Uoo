@@ -1,0 +1,18 @@
+{
+    "MYSQL": [
+        {
+            "host": "192.168.3.10",
+            "user": "kf",
+            "passwd": "tvi888tvi",
+            "db":"test"
+        }
+    ],
+    "MYSQL2":[
+        {
+            "host": "localhost",
+            "user": "root",
+            "passwd": "Zjk.19921016",
+            "db":"bi"
+        }
+    ]
+}
