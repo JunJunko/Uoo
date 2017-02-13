@@ -5,14 +5,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Mysql2TD {
 	
@@ -27,14 +22,24 @@ public class Mysql2TD {
 	                    String lineTxt = null;
 	                    StringBuffer sb = new StringBuffer();
 	                    
-	                    String regex = "^CREATE TABLE(.*?)$"; 
+
 //	                    // 用 Pattern 类的 matcher() 方法生成一个 Matcher 对象
 //	                    Matcher m = p.matcher("Kelvin Li and Kelvin Chan are both working in " +
 //	            			"Kelvin Chen's KelvinSoftShop company");
-	                    String reg=".*create table.*";
 	                    while((lineTxt = bufferedReader.readLine()) != null){
 //	                        System.out.println(lineTxt);
-	                        sb.append(lineTxt+"\r");
+	                    	if(lineTxt.matches(".*VARCHAR.*")&& lineTxt.matches(".*,.*")){
+	                    		sb.append(lineTxt.replace("),", ")  CHARACTER SET UNICODE CASESPECIFIC,").replace("not null,", "CHARACTER SET UNICODE CASESPECIFIC not null,")+"\r");
+	                    	    if(!lineTxt.matches(".*,.*")){
+	                    	    	sb.append(lineTxt+" CHARACTER SET UNICODE CASESPECIFIC\r");
+	                    	    }
+	                    	}else if(lineTxt.matches(".*VARCHAR.*")&& !lineTxt.matches(".*,.*")){                        
+	                    		sb.append(lineTxt+" CHARACTER SET UNICODE CASESPECIFIC\r");
+	                    	}else if(lineTxt.matches(".*prompt.*")){
+//	                    		sb.append(lineTxt+"\r");
+	                    	}else{
+	                    		sb.append(lineTxt+"\r");
+	                    	}
 	                    }
 	                    read.close();
 	                    
@@ -47,13 +52,14 @@ public class Mysql2TD {
 	                    	//只把建表语句输出、可以更改为只输出index
 	                    	if(strr[i].contains("create table")){
 	                    	
-	                    		String a = strr[i].replace("VARCHAR2", "VARCHAR").replace("DATE", "TIMESTAMP(6)").replace("NUMBER", "DECIMAL").replace("VARCHAR(3999", "VARCHAR(4000)").replace(" CHAR)", ")").replace("sysdate", "CURRENT_TIMESTAMP(0)").replaceAll("prompt", "").replace("create table ", "CREATE MULTISET TABLE ODS_DDL.").replace("\r(", ",NO FALLBACK ,\r"+
+	                    		String a = strr[i].replace("VARCHAR2", "VARCHAR").replace("DATE", "TIMESTAMP(6)").replace("NUMBER", "DECIMAL").replace("VARCHAR(3999", "VARCHAR(4000)").replace(" CHAR)", ")").replace("sysdate", "CURRENT_TIMESTAMP(0)").replace("create table ", "CREATE MULTISET TABLE ODS_DDL.").replace("\r(", ",NO FALLBACK ,\r"+
 	                    				"     NO BEFORE JOURNAL,\r"+
 	                    				"     NO AFTER JOURNAL,\r"+
 	                    				"     CHECKSUM = DEFAULT,\r"+
-	                    				"     DEFAULT MERGEBLOCKRATIO\r"+
-	                    				"     (\r");
-	                    	    method2("a.sql", a+";");
+	                    				"     DEFAULT MERGEBLOCKRATIO (").replace("==", "").replace(" month ", " \"MONTH\" ").replace(" time ", " \" TIME \" ")
+	                    				.replace(" day ", " \" DAY \" ").replace(" type ", " \" TYPE \" ").replace(" password ", " \" PASSWORD \" ").replace(" period ", " \" PERIOD \" ")
+	                    				.replace(" version ", " \" VERSION \" ");
+	                    	    method2("a.sql", a.toUpperCase()+";");
 	                    	
 	                    	}
 	                    	
