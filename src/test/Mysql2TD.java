@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Mysql2TD {
 	
@@ -49,9 +51,18 @@ public class Mysql2TD {
 	                    	/*oracle转换
 	                    	 */
 //	                    	System.out.println(strr[i].contains("create table"));
+	                    	
 	                    	//只把建表语句输出、可以更改为只输出index
 	                    	if(strr[i].contains("create table")){
-	                    	
+	                    		Pattern pattern= Pattern.compile("create table(.*)");
+
+	                    	    Matcher matcher = pattern.matcher(strr[i]);
+
+	                    	    if (matcher.find()) {
+//	                    		  System.out.println(matcher.group(1));
+	                    	    	StringBuffer a = "DROP TABLE "+matcher.group(1).toString().toUpperCase();
+	                    	     }
+	                    		
 	                    		String a = strr[i].replace("VARCHAR2", "VARCHAR").replace("DATE", "TIMESTAMP(6)").replace("NUMBER", "DECIMAL").replace("VARCHAR(3999", "VARCHAR(4000)").replace(" CHAR)", ")").replace("sysdate", "CURRENT_TIMESTAMP(0)").replace("create table ", "CREATE MULTISET TABLE ODS_DDL.").replace("\r(", ",NO FALLBACK ,\r"+
 	                    				"     NO BEFORE JOURNAL,\r"+
 	                    				"     NO AFTER JOURNAL,\r"+
@@ -59,7 +70,8 @@ public class Mysql2TD {
 	                    				"     DEFAULT MERGEBLOCKRATIO (").replace("==", "").replace(" month ", " \"MONTH\" ").replace(" time ", " \" TIME \" ")
 	                    				.replace(" day ", " \" DAY \" ").replace(" type ", " \" TYPE \" ").replace(" password ", " \" PASSWORD \" ").replace(" period ", " \" PERIOD \" ")
 	                    				.replace(" version ", " \" VERSION \" ");
-	                    	    method2("a.sql", a.toUpperCase()+";");
+	                    		
+//	                    	    method2("a.sql", a.toUpperCase()+";");
 	                    	
 	                    	}
 	                    	
@@ -100,36 +112,44 @@ e.printStackTrace();
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		readTxtFile("F:\\g工作资料\\shsnc\\无限极\\建表语句\\忠诚顾客管理系统.sql");
-		String str5 = "                                                                      "+
-				"                                                                      "+
-				"                                                                      "+
-				"Creating table CX_FXH_BUYPV                                           "+
-				"===========================                                           "+
-				"                                                                      "+
-				"create table CX_FXH_BUYPV                                              "+
-				"                                                                      "+
-				" row_id           VARCHAR(15 ) not null,                              "+
-				" created          TIMESTAMP(6) default CURRENT_TIMESTAMP(0) not null, "+
-				" created_by       VARCHAR(15 ) not null,                              "+
-				" last_upd         TIMESTAMP(6) default CURRENT_TIMESTAMP(0) not null, "+
-				" last_upd_by      VARCHAR(15 ) not null,                              "+
-				" modification_num DECIMAL(10) default 0 not null,                     "+
-				" conflict_id      VARCHAR(15 ) default '0' not null,                  "+
-				" db_last_upd      TIMESTAMP(6),                                       "+
-				" pv_date          TIMESTAMP(6),                                       "+
-				" pv_money         DECIMAL(10),                                        "+
-				" pv_num           DECIMAL(10),                                        "+
-				" act_name         VARCHAR(50 ),                                       "+
-				" card_name        VARCHAR(50 ),                                       "+
-				" card_num         VARCHAR(15 ),                                       "+
-				" card_phone       VARCHAR(15 ),                                       "+
-				" db_last_upd_src  VARCHAR(50 ),                                       "+
-				" reffer_num       VARCHAR(15 ),                                       "+
-				" pv_month         VARCHAR(15 )                                        "+
-				"                                                                      "+
-				"                                                                      "+
-				"                                                                      ";
-		 System.out.println(str5.matches(".*"));
+//		String str5 = "                                                                      "+
+//				"                                                                      "+
+//				"                                                                      "+
+//				"Creating table CX_FXH_BUYPV                                           "+
+//				"===========================                                           "+
+//				"                                                                      "+
+//				"create table CX_FXH_BUYPV                                              "+
+//				"                                                                      "+
+//				" row_id           VARCHAR(15 ) not null,                              "+
+//				" created          TIMESTAMP(6) default CURRENT_TIMESTAMP(0) not null, "+
+//				" created_by       VARCHAR(15 ) not null,                              "+
+//				" last_upd         TIMESTAMP(6) default CURRENT_TIMESTAMP(0) not null, "+
+//				" last_upd_by      VARCHAR(15 ) not null,                              "+
+//				" modification_num DECIMAL(10) default 0 not null,                     "+
+//				" conflict_id      VARCHAR(15 ) default '0' not null,                  "+
+//				" db_last_upd      TIMESTAMP(6),                                       "+
+//				" pv_date          TIMESTAMP(6),                                       "+
+//				" pv_money         DECIMAL(10),                                        "+
+//				" pv_num           DECIMAL(10),                                        "+
+//				" act_name         VARCHAR(50 ),                                       "+
+//				" card_name        VARCHAR(50 ),                                       "+
+//				" card_num         VARCHAR(15 ),                                       "+
+//				" card_phone       VARCHAR(15 ),                                       "+
+//				" db_last_upd_src  VARCHAR(50 ),                                       "+
+//				" reffer_num       VARCHAR(15 ),                                       "+
+//				" pv_month         VARCHAR(15 )                                        "+
+//				"                                                                      "+
+//				"                                                                      "+
+//				"                                                                      ";
+//		
+//		Pattern pattern= Pattern.compile("create table(.*)");
+//
+//	    Matcher matcher = pattern.matcher(str5);
+//
+//	  if (matcher.find()) {
+//		  System.out.println(matcher.group(1));
+//	  }
+//		System.out.println(str5.matches(".*"));
 	}
 
 }
