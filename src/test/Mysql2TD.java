@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +25,10 @@ public class Mysql2TD {
 	                    BufferedReader bufferedReader = new BufferedReader(read);
 	                    String lineTxt = null;
 	                    StringBuffer sb = new StringBuffer();
-	                    
+	                    RandomAccessFile rf = new RandomAccessFile("a.sql", "rw");
+	                    FileChannel fc = rf.getChannel();
+	                    //将文件大小截为0
+	                    fc.truncate(0);
 
 //	                    // 用 Pattern 类的 matcher() 方法生成一个 Matcher 对象
 //	                    Matcher m = p.matcher("Kelvin Li and Kelvin Chan are both working in " +
@@ -31,7 +36,7 @@ public class Mysql2TD {
 	                    while((lineTxt = bufferedReader.readLine()) != null){
 //	                        System.out.println(lineTxt);
 	                    	if(lineTxt.matches(".*VARCHAR.*")&& lineTxt.matches(".*,.*")){
-	                    		sb.append(lineTxt.replace("),", ")  CHARACTER SET UNICODE CASESPECIFIC,").replace("not null,", "CHARACTER SET UNICODE CASESPECIFIC not null,")+"\r");
+	                    		sb.append(lineTxt.replace("),", ")  CHARACTER SET UNICODE CASESPECIFIC,").replace("NOT NULL,", "CHARACTER SET UNICODE CASESPECIFIC not null,")+"\r");
 	                    	    if(!lineTxt.matches(".*,.*")){
 	                    	    	sb.append(lineTxt+" CHARACTER SET UNICODE CASESPECIFIC\r");
 	                    	    }
@@ -53,25 +58,27 @@ public class Mysql2TD {
 //	                    	System.out.println(strr[i].contains("create table"));
 	                    	
 	                    	//只把建表语句输出、可以更改为只输出index
-	                    	if(strr[i].contains("create table")){
-	                    		Pattern pattern= Pattern.compile("create table(.*)");
+	                    	StringBuffer a = new StringBuffer();
+	                    	if(strr[i].contains("CREATE TABLE")){
+	                    		Pattern pattern= Pattern.compile("CREATE TABLE(.*)");
 
 	                    	    Matcher matcher = pattern.matcher(strr[i]);
 
 	                    	    if (matcher.find()) {
 //	                    		  System.out.println(matcher.group(1));
-	                    	    	StringBuffer a = "DROP TABLE "+matcher.group(1).toString().toUpperCase();
+	                    	    	
+	                    	    	a.append("DROP TABLE ODS_DDL."+matcher.group(1).trim()+";");
 	                    	     }
 	                    		
-	                    		String a = strr[i].replace("VARCHAR2", "VARCHAR").replace("DATE", "TIMESTAMP(6)").replace("NUMBER", "DECIMAL").replace("VARCHAR(3999", "VARCHAR(4000)").replace(" CHAR)", ")").replace("sysdate", "CURRENT_TIMESTAMP(0)").replace("create table ", "CREATE MULTISET TABLE ODS_DDL.").replace("\r(", ",NO FALLBACK ,\r"+
+	                    		a.append(strr[i].replace("VARCHAR2", "VARCHAR").replace("DATE", "TIMESTAMP(6)").replace("NUMBER", "DECIMAL").replace("VARCHAR(3999", "VARCHAR(4000)").replace(" CHAR)", ")").replace("sysdate", "CURRENT_TIMESTAMP(0)").replace("create table ", "CREATE MULTISET TABLE ODS_DDL.").replace("\r(", ",NO FALLBACK ,\r"+
 	                    				"     NO BEFORE JOURNAL,\r"+
 	                    				"     NO AFTER JOURNAL,\r"+
 	                    				"     CHECKSUM = DEFAULT,\r"+
 	                    				"     DEFAULT MERGEBLOCKRATIO (").replace("==", "").replace(" month ", " \"MONTH\" ").replace(" time ", " \" TIME \" ")
 	                    				.replace(" day ", " \" DAY \" ").replace(" type ", " \" TYPE \" ").replace(" password ", " \" PASSWORD \" ").replace(" period ", " \" PERIOD \" ")
-	                    				.replace(" version ", " \" VERSION \" ");
+	                    				.replace(" version ", " \" VERSION \" "));
 	                    		
-//	                    	    method2("a.sql", a.toUpperCase()+";");
+	                    	    method2("a.sql", a.toString().toUpperCase()+";");
 	                    	
 	                    	}
 	                    	
@@ -92,6 +99,7 @@ public class Mysql2TD {
 
 public static void method2(String file, String conent) {
 BufferedWriter out = null;
+
 try {
 out = new BufferedWriter(new OutputStreamWriter(
 new FileOutputStream(file, true)));
@@ -111,7 +119,7 @@ e.printStackTrace();
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		readTxtFile("F:\\g工作资料\\shsnc\\无限极\\建表语句\\忠诚顾客管理系统.sql");
+		readTxtFile("F:\\g工作资料\\shsnc\\无限极\\建表语句\\售后服务系统.sql");
 //		String str5 = "                                                                      "+
 //				"                                                                      "+
 //				"                                                                      "+
