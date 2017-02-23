@@ -5,7 +5,7 @@
 	<classpathentry kind="lib" path="libs/mysql-connector-java-5.1.39-bin.jar"/>
 	<classpathentry kind="lib" path="/idp_prj_win/lib/jlmapi.jar"/>
 	<classpathentry kind="lib" path="/idp_prj_win/lib/jmf-jaxb.jar"/>
-	<classpathentry kind="lib" path="/idp_prj_win/lib/jmf.jar"/>
+	<classpathentry kind="lib" path="/idp_prj_win/lib/jmf.jar" sourcepath="D:/workspace/Uoo"/>
 	<classpathentry kind="lib" path="/idp_prj_win/lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="/idp_prj_win/lib/pmserversdk.jar"/>
 	<classpathentry kind="lib" path="libs/dom4j-1.6.1.jar"/>

@@ -5,7 +5,11 @@
  * INFORMATICA PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -18,13 +22,19 @@ import com.informatica.powercenter.sdk.mapfwk.core.Mapping;
 import com.informatica.powercenter.sdk.mapfwk.core.MappingVariable;
 import com.informatica.powercenter.sdk.mapfwk.core.MappingVariableDataTypes;
 import com.informatica.powercenter.sdk.mapfwk.core.OutputSet;
+import com.informatica.powercenter.sdk.mapfwk.core.ParameterFile;
+import com.informatica.powercenter.sdk.mapfwk.core.ParameterFileIterator;
 import com.informatica.powercenter.sdk.mapfwk.core.RowSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Session;
+import com.informatica.powercenter.sdk.mapfwk.core.SessionPropsConstants;
 import com.informatica.powercenter.sdk.mapfwk.core.Source;
 import com.informatica.powercenter.sdk.mapfwk.core.Target;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformField;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformHelper;
 import com.informatica.powercenter.sdk.mapfwk.core.Workflow;
+import com.informatica.powercenter.sdk.mapfwk.samples.SessionProperties;
+
+
 
 /**
  * This example applies a simple expression transformation on the Employee table
@@ -43,7 +53,8 @@ public class Expression extends Base {
      */
     protected void createSources() {
 //        employeeSrc = this.createEmployeeSource();
-    	employeeSrc = this.CreateCrm("CX_FXH_LOGIN", "TDM_SOUR");
+    	employeeSrc = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"));
+//    	employeeSrc = this.createMysqlSource(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"));
         folder.addSource( employeeSrc );
     }
 
@@ -52,12 +63,12 @@ public class Expression extends Base {
      */
     protected void createTargets() {
     	TdTarget =  this.createRelationalTarget( SourceTargetType.Teradata,
-                "DBA_SEGMENTS" );
+                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm") );
     }
 
     public void createMappings() throws Exception {
         // create a mapping
-        mapping = new Mapping( "ExpressionMapping", "mapping", "Testing Expression sample" );
+        mapping = new Mapping( "m_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "mapping", "Testing Expression sample" );
         setMapFileName( mapping );
         TransformHelper helper = new TransformHelper( mapping );
         // creating DSQ Transformation
@@ -74,12 +85,15 @@ public class Expression extends Base {
 //        String expr3 = "data/time DW_UPD_TM= sysdate";
 //        TransformField outField3 = new TransformField( expr3 );
         
-        String expr = "integer(1,0) DW_OPER_FLAG1 = 1";
+        String expr = "integer(1,0) DW_OPER_FLAG = 1";
         TransformField outField = new TransformField( expr );
+        
         String expr2 = "date/time(29,9) DW_ETL_DT= to_date($$PRVS1D_CUR_DATE, 'yyyymmdd')";
         TransformField outField2 = new TransformField( expr2 );
-        String expr3 = "data/time(29,9) DW_UPD_TM= sysdate";
+        
+        String expr3 = "date/time(29,9) DW_UPD_TM= sysdate";
         TransformField outField3 = new TransformField( expr3 );
+        
         List<TransformField> transFields = new ArrayList<TransformField>();
         transFields.add( outField );
         transFields.add( outField2 );
@@ -96,11 +110,17 @@ public class Expression extends Base {
     }
 
     public static void main( String args[] ) {
+    	
+    	
         try {
             Expression expressionTrans = new Expression();
             if (args.length > 0) {
                 if (expressionTrans.validateRunMode( args[0] )) {
-                    expressionTrans.execute();
+                	ArrayList<String> a = GetTableList();
+                	for(int i = 0; i < a.size(); i++){
+                		org.tools.GetProperties.writeProperties("TableNm", a.get(i));
+                        expressionTrans.execute();
+                	}
                 }
             } else {
                 expressionTrans.printUsage();
@@ -109,6 +129,8 @@ public class Expression extends Base {
             e.printStackTrace();
             System.err.println( "Exception is: " + e.getMessage() );
         }
+    	
+    	System.out.println(GetTableList());
     }
 
     /*
@@ -121,12 +143,14 @@ public class Expression extends Base {
 //                "This is session for expression" );
 //        session.setMapping( this.mapping );
 //    }
+   
+    
     
     protected void createSession() throws Exception {
 		// TODO Auto-generated method stub
-		session = new Session("Session_For_ExpressionDMOTx", "Session_For_ExpressionDMOTx",
+	session = new Session("s_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "s_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"),
 		"This is session for Expression DMO Tx");
-	session.setMapping(mapping);
+	session.setMapping(this.mapping);
 	
 	//Adding Connection Objects for substitution mask option
 	ConnectionInfo info = new ConnectionInfo(SourceTargetType.Oracle);
@@ -146,18 +170,28 @@ public class Expression extends Base {
 	
 	//Overriding source connection in Seesion level
 	ConnectionInfo newSrcCon = new ConnectionInfo(SourceTargetType.Oracle);
-	ConnectionProperties newSrcConprops = newSrcCon.getConnProps();
-	newSrcConprops.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "TDM_SOUR");
-	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_DBA_SEGMENTS");
+	newSrcCon.setConnectionVariable("$DBConnection_CRM");
+//	ConnectionProperties newSrcConprops = newSrcCon.getConnProps();
+//	newSrcConprops.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "$DBConnection_CRM");
+	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
 	session.addConnectionInfoObject(dsq, newSrcCon);
 	//session.addConnectionInfoObject(jobSourceObj, newSrcCon);
 	
 	//Overriding target connection in Seesion level
-	ConnectionInfo newTgtCon = new ConnectionInfo(SourceTargetType.Oracle);
+	ConnectionInfo newTgtCon = new ConnectionInfo(SourceTargetType.Teradata_PT_Connection);
+
 	ConnectionProperties newTgtConprops = newTgtCon.getConnProps();
-	newTgtConprops.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "TDM_TARGET");
-	session.addConnectionInfoObject(TdTarget, newTgtCon);
 	
+	newTgtConprops.setProperty(ConnectionPropsConstants.TRUNCATE_TABLE, "YES");
+	
+	newTgtConprops.setProperty(SessionPropsConstants.PARAMETER_FILENAME, "$PMRootDir/EDWParam/edw.param");
+	
+	newTgtCon.setConnectionVariable("$DBConnection_TD");
+//	ConnectionProperties newTgtConprops = newTgtCon.getConnProps();
+//	newTgtConprops.setProperty( ConnectionPropsConstants.CONNECTIONNAME, "$DBConnection_TD");
+
+
+	session.addConnectionInfoObject(TdTarget, newTgtCon);
 	//Setting session level property.
 	Properties props = new Properties();
 //	session.addSessionTransformInstanceProperties(dmo, props);
@@ -170,10 +204,40 @@ public class Expression extends Base {
      * @see com.informatica.powercenter.sdk.mapfwk.samples.Base#createWorkflow()
      */
     protected void createWorkflow() throws Exception {
-        workflow = new Workflow( "Workflow_for_Expression", "Workflow_for_Expression",
+        workflow = new Workflow( "wf_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "wf_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"),
                 "This workflow for expression" );
+//        workflow.setParentFolder(folder);
+//        List<String> listOfParams = workflow.getListOfParameters();
+//        ParameterFile pmFile = new ParameterFile("$PMRootDir/EDWParam/edw.param");
+//        Iterator<String> listOfParamsIter = listOfParams.iterator();
+//		int i=0;
+//		while(listOfParamsIter.hasNext())
+//		{
+//			pmFile.setParameterValue(listOfParamsIter.next(), new Integer(i).toString());
+//			i++;
+//		}
+//		pmFile.save();
+//		ParameterFileIterator iter = pmFile.iterator();
         workflow.addSession( session );
-        workflow.assignIntegrationService("INFA_INT", "Domain_db");
+        workflow.assignIntegrationService(org.tools.GetProperties.getKeyValue("Integration"), org.tools.GetProperties.getKeyValue("Domain"));
         folder.addWorkFlow( workflow );
     }
+    
+    
+    
+    public static ArrayList<String> GetTableList() {   
+    	ArrayList<String> TL = new ArrayList<String> ();
+    	ArrayList<String> b = org.tools.ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
+        for (int i = 0; i < b.size(); i++){
+        	ArrayList<String> a = (ArrayList<String>) org.tools.ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).get(i);
+        	if(!TL.contains(a.get(0))){
+        		TL.add(a.get(0));
+        		
+        	}
+        }  
+        
+        return TL;
+    }
+
+	
 }

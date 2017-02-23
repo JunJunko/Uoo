@@ -5,7 +5,6 @@
  * INFORMATICA PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import com.informatica.powercenter.sdk.mapfwk.core.INameFilter;
 import com.informatica.powercenter.sdk.mapfwk.core.MapFwkOutputContext;
 import com.informatica.powercenter.sdk.mapfwk.core.Mapping;
 import com.informatica.powercenter.sdk.mapfwk.core.NativeDataTypes;
-import com.informatica.powercenter.sdk.mapfwk.core.NativeDataTypes.Oracle;
 import com.informatica.powercenter.sdk.mapfwk.core.SASHelper;
 import com.informatica.powercenter.sdk.mapfwk.core.Session;
 import com.informatica.powercenter.sdk.mapfwk.core.Source;
@@ -39,7 +37,8 @@ import com.informatica.powercenter.sdk.mapfwk.repository.RepoConnectionInfo;
 import com.informatica.powercenter.sdk.mapfwk.repository.RepoPropsConstants;
 import com.informatica.powercenter.sdk.mapfwk.repository.Repository;
 
-import org.tools.ExcelUtil;
+import org.tools.ExcelUtil; 
+
 /**
  *
  *
@@ -132,80 +131,6 @@ public abstract class Base {
 	/**
 	 * Create source for Employee Source
 	 */
-	
-	protected Source CreateCrm(String TableNm, String dbName) {
-		List<Field> fields = new ArrayList<Field>();
-		
-		int j = 0;
-		String len = null;
-		String precision = null;
-		Source tabSource = null;
-		
-		for(int i = 0; i < ExcelUtil.readXml("F:\\g工作资料\\shsnc\\无限极\\test.xlsx").size(); i++){
-			List a = (List) ExcelUtil.readXml("F:\\g工作资料\\shsnc\\无限极\\test.xlsx").get(i);
-			if (a.get(0).equals(TableNm)){
-				  String pattern = ".*?\\((.*?)\\).*?";      
-				  // 创建 Pattern 对象
-			      Pattern r = Pattern.compile(pattern);
-			 
-			      // 现在创建 matcher 对象
-			      Matcher m = r.matcher(a.get(2).toString());
-			      if (m.find( )) {
-			    	  String[] sourceStrArray = m.group(1).toString().split(",");
-			    	    if (sourceStrArray.length == 3){
-			    	        len = sourceStrArray[0];
-			    	    	precision = sourceStrArray[1];
-			    	    }else{
-			    	    	len = sourceStrArray[0];
-			    	    	precision = "0";
-			    	    }
-			      }
-                  String DataType = "VARCHAR2";
-                  String sb = new String();
-//                  System.out.println(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")));
-                  switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
-                  {
-                  case "VARCHAR2": sb = NativeDataTypes.Oracle.VARCHAR2; break;
-                  case "NUMBER": sb = NativeDataTypes.Oracle.NUMBER_PS; break;
-                  case "DATE": sb = NativeDataTypes.Oracle.DATE; break;
-                  case "BLOB": sb = NativeDataTypes.Oracle.BLOB; break;
-                  case "CHAR": sb = NativeDataTypes.Oracle.CHAR; break;
-                  case "CLOB": sb = NativeDataTypes.Oracle.CLOB; break;
-                  case "LONG": sb = NativeDataTypes.Oracle.LONG; break;
-                  case "LONGRAW": sb = NativeDataTypes.Oracle.LONGRAW; break;
-                  case "NCHAR": sb = NativeDataTypes.Oracle.NCHAR; break;
-                  case "NCLOB": sb = NativeDataTypes.Oracle.NCLOB; break;
-                  case "TIMESTAMP": sb = NativeDataTypes.Oracle.TIMESTAMP; break;
-                  case "VARCHAR": sb = NativeDataTypes.Oracle.VARCHAR; break;
-                  default: sb = NativeDataTypes.Oracle.VARCHAR2; break; 
-                  }; 
-//                  System.out.println(sb);
-                  
-				  Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						  sb, len, precision,
-				  FieldKeyType.NOT_A_KEY, FieldType.SOURCE, false);
-//				  Field OWNER=new Field("OWNER","OWNER","",NativeDataTypes.Oracle.VARCHAR2,"30","0",FieldKeyType.NOT_A_KEY,FieldType.SOURCE,false);
-				  
-
-				  fields.add(field);
-			}
-		}
-		ConnectionInfo info = getRelationalConnInfo(SourceTargetType.Oracle,
-				dbName);
-		tabSource = new Source("DBA_SEGMENTS", "DBA_SEGMENTS", "This is oracle table", "DBA_SEGMENTS",
-				info);
-		tabSource.setFields(fields);
-		return tabSource;
-		
-		
-//		ConnectionInfo info = getRelationalConnInfo(SourceTargetType.Oracle,
-//				dbName);
-//		jobSource = new Source("JOBS", "JOBS", "This is JOBS table", "JOBS",
-//				info);
-//		jobSource.setFields(fields);
-//		return jobSource;
-	}
-	
 	protected Source createEmployeeSource() {
 		List<Field> fields = new ArrayList<Field>();
 		Field field1 = new Field("EmployeeID", "EmployeeID", "",
@@ -494,7 +419,7 @@ public abstract class Base {
 				FieldKeyType.NOT_A_KEY, FieldType.SOURCE, false);
 		fields.add(field5);
 
-		ConnectionInfo info = new ConnectionInfo(null);
+		ConnectionInfo info = getFlatFileConnectionInfo();
 		info.getConnProps().setProperty(
 				ConnectionPropsConstants.SOURCE_FILENAME, "products.csv");
 		productSource = new Source("Products", "Products",
@@ -1304,6 +1229,74 @@ public abstract class Base {
 			throw new IOException(
 					"pcconfig.properties file not found.Add Directory containing pcconfig.properties to ClassPath");
 		}
+	}
+	
+	protected Source CreateCrm(String TableNm, String dbName) {
+		List<Field> fields = new ArrayList<Field>();
+		
+		int j = 0;
+		String len = null;
+		String precision = null;
+		Source tabSource = null;
+		List a = null;
+		String TableName = null;
+		for(int i = 0; i < ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).size(); i++){
+		    a = (List) ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).get(i);
+			if (a.get(0).equals(TableNm)){
+				  String pattern = ".*?\\((.*?)\\).*?";      
+				  // 创建 Pattern 对象
+			      Pattern r = Pattern.compile(pattern);
+			 
+			      // 现在创建 matcher 对象
+			      Matcher m = r.matcher(a.get(2).toString());
+			      if (m.find( )) {
+			    	  String[] sourceStrArray = m.group(1).toString().split(",");
+			    	    if (sourceStrArray.length == 3){
+			    	        len = sourceStrArray[0];
+			    	    	precision = sourceStrArray[1];
+			    	    }else{
+			    	    	len = sourceStrArray[0];
+			    	    	precision = "0";
+			    	    }
+			      }
+                  String DataType = "VARCHAR2";
+                  String sb = new String();
+//                  System.out.println(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")));
+                  switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
+                  {
+                  case "VARCHAR2": sb = NativeDataTypes.Oracle.VARCHAR2; break;
+                  case "NUMBER": sb = NativeDataTypes.Oracle.NUMBER_PS; break;
+                  case "DATE": sb = NativeDataTypes.Oracle.DATE; break;
+                  case "BLOB": sb = NativeDataTypes.Oracle.BLOB; break;
+                  case "CHAR": sb = NativeDataTypes.Oracle.CHAR; break;
+                  case "CLOB": sb = NativeDataTypes.Oracle.CLOB; break;
+                  case "LONG": sb = NativeDataTypes.Oracle.LONG; break;
+                  case "LONGRAW": sb = NativeDataTypes.Oracle.LONGRAW; break;
+                  case "NCHAR": sb = NativeDataTypes.Oracle.NCHAR; break;
+                  case "NCLOB": sb = NativeDataTypes.Oracle.NCLOB; break;
+                  case "TIMESTAMP": sb = NativeDataTypes.Oracle.TIMESTAMP; break;
+                  case "VARCHAR": sb = NativeDataTypes.Oracle.VARCHAR; break;
+                  default: sb = NativeDataTypes.Oracle.VARCHAR2; break; 
+                  }; 
+//                  System.out.println(a.get(0).toString());
+                  
+				  Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
+						  sb, len, precision,
+				  FieldKeyType.NOT_A_KEY, FieldType.SOURCE, false);
+//				  Field OWNER=new Field("OWNER","OWNER","",NativeDataTypes.Oracle.VARCHAR2,"30","0",FieldKeyType.NOT_A_KEY,FieldType.SOURCE,false);
+				  
+
+				  fields.add(field);
+				  TableName = a.get(0).toString();
+			}
+		}
+		ConnectionInfo info = getRelationalConnInfo(SourceTargetType.Oracle,
+				dbName);
+		tabSource = new Source(TableName, TableName, "This is oracle table", TableName,
+				info);
+//		System.out.println(a.get(0).toString());
+		tabSource.setFields(fields);
+		return tabSource;
 	}
 
 	public boolean validateRunMode(String value) {
