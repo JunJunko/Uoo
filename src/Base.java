@@ -29,7 +29,6 @@ import com.informatica.powercenter.sdk.mapfwk.core.Session;
 import com.informatica.powercenter.sdk.mapfwk.core.Source;
 import com.informatica.powercenter.sdk.mapfwk.core.StringConstants;
 import com.informatica.powercenter.sdk.mapfwk.core.Target;
-import com.informatica.powercenter.sdk.mapfwk.core.TaskInstance;
 import com.informatica.powercenter.sdk.mapfwk.core.Workflow;
 import com.informatica.powercenter.sdk.mapfwk.exception.MapFwkReaderException;
 import com.informatica.powercenter.sdk.mapfwk.exception.RepoOperationException;

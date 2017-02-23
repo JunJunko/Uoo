@@ -173,6 +173,7 @@ public class Expression extends Base {
 	newSrcCon.setConnectionVariable("$DBConnection_CRM");
 //	ConnectionProperties newSrcConprops = newSrcCon.getConnProps();
 //	newSrcConprops.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "$DBConnection_CRM");
+//	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
 	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
 	session.addConnectionInfoObject(dsq, newSrcCon);
 	//session.addConnectionInfoObject(jobSourceObj, newSrcCon);
