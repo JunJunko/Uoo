@@ -38,7 +38,7 @@ public class ConFileContent {
     {
         try
         {
-        String path="m_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml";
+        String path=org.tools.GetProperties.getKeyValue("System")+"\\m_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml";
         File file=new File(path);
         if(!file.exists())
             file.createNewFile();

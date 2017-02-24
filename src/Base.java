@@ -80,7 +80,7 @@ public abstract class Base {
 	 * Create a repository
 	 */
 	protected void createRepository() {
-		rep = new Repository("PowerCenter", "PowerCenter",
+		rep = new Repository("dev_store_edw", "dev_store_edw",
 				"This repository contains API test samples");
 		RepoConnectionInfo repo= new RepoConnectionInfo();
 		repo.setCodepage("MS936");
@@ -91,7 +91,7 @@ public abstract class Base {
 	 * Creates a folder
 	 */
 	protected void createFolder() {
-		folder = new Folder("JavaMappingSamples", "JavaMappingSamples",
+		folder = new Folder("CRM", "CRM",
 				"This is a folder containing java mapping samples");
 		rep.addFolder(folder);
 		
@@ -1105,6 +1105,9 @@ public abstract class Base {
 		
 		rep.save(outputContext, doImport);
 		System.out.println("Mapping generated in " + mapFileName);
+		String XmlData = org.tools.ConFileContent.readToString("m_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
+//      System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
+		org.tools.ConFileContent.writeLog(XmlData);
 	}
 
 	protected void setMapFileName(Mapping mapping) {

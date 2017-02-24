@@ -12,14 +12,14 @@
 
 <!--FOLDERMAP matches the folders in the imported file with the folders in the target repository -->
 
-	<FOLDERMAP SOURCEFOLDERNAME="dev_store_edw" SOURCEREPOSITORYNAME="PowerCenter" TARGETFOLDERNAME="CRM" TARGETREPOSITORYNAME="dev_store_edw"/>	
+	<FOLDERMAP SOURCEFOLDERNAME="CRM" SOURCEREPOSITORYNAME="dev_store_edw" TARGETFOLDERNAME="CRM" TARGETREPOSITORYNAME="dev_store_edw"/>	
 
 <!--Import will only import the objects in the selected types in TYPEFILTER node -->
 <!--TYPENAME type name to import. This should comforming to the element name in powermart.dtd, e.g. SOURCE, TARGET and etc.-->
 
 <!--RESOLVECONFLICT allows to specify resolution for conflicting objects during import. The combination of specified child nodes can be supplied -->
 	<RESOLVECONFLICT>
-    <TYPEOBJECT OBJECTTYPENAME="ALL" RESOLUTION="REUSE"/>
+    <TYPEOBJECT OBJECTTYPENAME="ALL" RESOLUTION="REPLACE"/>
 <!--TYPEOBJECT allows objects of certain type to apply replace/reuse upon conflict-->
 <!--TYPEOBJECT = ALL conflict resolution for ALL types of objects -->
 		</RESOLVECONFLICT>

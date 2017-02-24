@@ -30,7 +30,7 @@ public class CallPmrepCom {
     } 
 	
 	public static List<String> getFileName() {
-        String path = "D:\\workspace\\Uoo\\xml"; // Â·¾¶
+        String path = "D:\\workspace\\Uoo\\"+org.tools.GetProperties.getKeyValue("System"); // Â·¾¶
         File f = new File(path);
         if (!f.exists()) {
             System.out.println(path + " not exists");
@@ -68,7 +68,7 @@ public class CallPmrepCom {
 			List<String> FN = getFileName();
 			writeLog("D:\\software\\Informatica\\9.6.1\\clients\\PowerCenterClient\\client\\bin\\pmrep connect -r dev_store_edw  -h etldsvr01 -o 6005 -n NC_ZJK -x 499099784\r");
 			for (int i = 0; i < FN.size(); i++){
-				writeLog("D:\\software\\Informatica\\9.6.1\\clients\\PowerCenterClient\\client\\bin\\pmrep objectImport -i D:\\workspace\\Uoo\\xml\\"+FN.get(i)+" -c D:\\workspace\\Uoo\\sample_import_controlfile.xml\r");
+				writeLog("D:\\software\\Informatica\\9.6.1\\clients\\PowerCenterClient\\client\\bin\\pmrep objectImport -i D:\\workspace\\Uoo\\"+org.tools.GetProperties.getKeyValue("System")+"\\"+FN.get(i)+" -c D:\\workspace\\Uoo\\sample_import_controlfile.xml\r");
 			}
 	
 	}
