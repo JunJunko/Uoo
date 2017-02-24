@@ -53,6 +53,7 @@ public abstract class Base {
 	protected String mapFileName;
 	protected Mapping mapping;
 	protected int runMode = 0;
+	protected static List<List<String>> TableList = null;
 
 	/**
 	 * Common execute method
@@ -1105,9 +1106,9 @@ public abstract class Base {
 		
 		rep.save(outputContext, doImport);
 		System.out.println("Mapping generated in " + mapFileName);
-		String XmlData = org.tools.ConFileContent.readToString("m_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
+//		String XmlData = org.tools.ConFileContent.readToString("m_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 //      System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
-		org.tools.ConFileContent.writeLog(XmlData);
+//		org.tools.ConFileContent.writeLog(XmlData);
 	}
 
 	protected void setMapFileName(Mapping mapping) {
@@ -1240,11 +1241,13 @@ public abstract class Base {
 		String len = null;
 		String precision = null;
 		Source tabSource = null;
-		List a = null;
+		List<String> a = null; 
 		String TableName = null;
 		for(int i = 0; i < ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).size(); i++){
 		    a = (List) ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).get(i);
+//		    TableList.add(a);
 			if (a.get(0).equals(TableNm)){
+//				TableList.add(a);
 				  String pattern = ".*?\\((.*?)\\).*?";      
 				  // 创建 Pattern 对象
 			      Pattern r = Pattern.compile(pattern);
