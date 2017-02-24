@@ -116,8 +116,27 @@ public class Joiner extends Base {
         	List<String> a = (List) ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).get(i);
 
         	if (a.get(0).equals(org.tools.GetProperties.getKeyValue("TableNm"))){
+        		
+        		String sb = null;
+        		switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
+                {
+                case "VARCHAR2": sb = a.get(2).replace("VARCHAR2", "String").replace(")", ",0)"); break;
+                case "NUMBER": sb = a.get(2).replace("NUMBER", "decimal").replace(")", ",0)"); break;
+                case "DATE": sb = "date/time(29,9)"; break;
+                case "BLOB": sb = a.get(2).replace("BLOB", "binary").replace(")", ",0)"); break;
+                case "CHAR": sb = a.get(2).replace("CHAR", "String").replace(")", ",0)"); break;
+                case "CLOB": sb = a.get(2).replace("CLOB", "binary").replace(")", ",0)"); break;
+                case "LONG": sb = a.get(2).replace("LONG", "binary").replace(")", ",0)"); break;
+                case "LONGRAW": sb = a.get(2).replace("LONGRAW", "text").replace(")", ",0)"); break;
+                case "NCHAR": sb = a.get(2).replace("NCHAR", "String").replace(")", ",0)"); break;
+                case "NCLOB": sb = a.get(2).replace("NCLOB", "binary").replace(")", ",0)"); break;
+                case "TIMESTAMP": sb = "date/time(29,9)"; break;
+                case "VARCHAR": sb = a.get(2).replace("VARCHAR", "String").replace(")", ",0)"); break;
+                default: sb = "String(50,0)"; break; 
+                };
 //        		
-        	    String exp = "String(40,0)"+" "+a.get(1)+"_out"+" = iif(isnull("+a.get(1)+"),"+"IN_"+a.get(1)+","+a.get(1)+")";
+                System.out.println(sb);
+        	    String exp = sb +" "+a.get(1)+"_out"+" = iif(isnull("+a.get(1)+"),"+"IN_"+a.get(1)+","+a.get(1)+")";
         	    TransformField outField = new TransformField( exp );
                 transFields.add( outField );
                 if(a.get(1) != null){
