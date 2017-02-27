@@ -54,6 +54,9 @@ public abstract class Base {
 	protected Mapping mapping;
 	protected int runMode = 0;
 	protected static List<List<String>> TableList = null;
+	protected ArrayList<ArrayList<String>> TableConf = ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
+//	protected String TableNm = org.tools.GetProperties.getKeyValue("TableNm");
+
 
 	/**
 	 * Common execute method
@@ -1106,9 +1109,9 @@ public abstract class Base {
 		
 		rep.save(outputContext, doImport);
 		System.out.println("Mapping generated in " + mapFileName);
-//		String XmlData = org.tools.ConFileContent.readToString("m_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
-//      System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
-//		org.tools.ConFileContent.writeLog(XmlData);
+		String XmlData = org.tools.ConFileContent.readToString("M_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
+//        System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
+		org.tools.ConFileContent.writeLog(XmlData);
 	}
 
 	protected void setMapFileName(Mapping mapping) {
@@ -1237,14 +1240,13 @@ public abstract class Base {
 	protected Source CreateCrm(String TableNm, String dbName) {
 		List<Field> fields = new ArrayList<Field>();
 		
-		int j = 0;
 		String len = null;
 		String precision = null;
 		Source tabSource = null;
 		List<String> a = null; 
 		String TableName = null;
-		for(int i = 0; i < ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).size(); i++){
-		    a = (List) ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).get(i);
+		for(int i = 0; i < TableConf.size(); i++){
+		    a = (List) TableConf.get(i);
 //		    TableList.add(a);
 			if (a.get(0).equals(TableNm)){
 //				TableList.add(a);

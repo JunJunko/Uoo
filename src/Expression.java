@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.tools.ExcelUtil;
+
 import com.informatica.powercenter.sdk.mapfwk.connection.ConnectionInfo;
 import com.informatica.powercenter.sdk.mapfwk.connection.ConnectionProperties;
 import com.informatica.powercenter.sdk.mapfwk.connection.ConnectionPropsConstants;
@@ -47,7 +49,11 @@ public class Expression extends Base {
     // /////////////////////////////////////////////////////////////////////////////////////
     protected Source employeeSrc;
     protected Target TdTarget;
+	protected static ArrayList<List<String>> TableConf = ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
 
+
+	
+	
     /**
      * Create sources
      */
@@ -68,7 +74,7 @@ public class Expression extends Base {
 
     public void createMappings() throws Exception {
         // create a mapping
-        mapping = new Mapping( "m_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "mapping", "Testing Expression sample" );
+        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "mapping", "Testing Expression sample" );
         setMapFileName( mapping );
         TransformHelper helper = new TransformHelper( mapping );
         // creating DSQ Transformation
@@ -118,7 +124,9 @@ public class Expression extends Base {
                 if (expressionTrans.validateRunMode( args[0] )) {
                 	ArrayList<String> a = GetTableList();
                 	for(int i = 0; i < a.size(); i++){
+                		
                 		org.tools.GetProperties.writeProperties("TableNm", a.get(i));
+//                		System.out.println(org.tools.GetProperties.getKeyValue("org.tools.GetProperties.getKeyValue("TableNm")"));
                         expressionTrans.execute();
                 	}
                 }
@@ -194,7 +202,6 @@ public class Expression extends Base {
 
 	session.addConnectionInfoObject(TdTarget, newTgtCon);
 	//Setting session level property.
-	Properties props = new Properties();
 //	session.addSessionTransformInstanceProperties(dmo, props);
 
 	}
@@ -228,9 +235,9 @@ public class Expression extends Base {
     
     public static ArrayList<String> GetTableList() {   
     	ArrayList<String> TL = new ArrayList<String> ();
-    	ArrayList<String> b = org.tools.ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
-        for (int i = 0; i < b.size(); i++){
-        	ArrayList<String> a = (ArrayList<String>) org.tools.ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath")).get(i);
+      
+        for (int i = 0; i < TableConf.size(); i++){
+        	ArrayList<String> a = (ArrayList<String>) TableConf.get(i);
         	if(!TL.contains(a.get(0))){
         		TL.add(a.get(0));
         		
