@@ -1,10 +1,12 @@
 package org.tools;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 
@@ -54,10 +56,36 @@ public class ConFileContent {
         }
     }    
 	
+	public static void ReplaceColumnNm(String filename){
+		try {  
+            FileInputStream in = new FileInputStream(filename);  
+            InputStreamReader inReader = new InputStreamReader(in, "GBK");  
+            BufferedReader bufReader = new BufferedReader(inReader);  
+            String line = null;  
+            int i = 1;  
+            String reg=".*TARGETFIELD.*";  //判断字符串中是否含有ll
+            while((line = bufReader.readLine()) != null){  
+            	
+            	if(line.matches(reg)){
+                    System.out.println("第" + i + "行：" + line); 
+            	}
+                i++;  
+            }  
+            bufReader.close();  
+            inReader.close();  
+            in.close();  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+            System.out.println("读取" + filename + "出错！");  
+        }  
+		
+	} 
+	
 	public static void main( String args[] ) {
-		String XmlData = readToString("M_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
+//		String XmlData = readToString("M_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 //        System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
-		writeLog(XmlData);
+//		writeLog(XmlData);
+		ReplaceColumnNm("D:\\workspace\\Uoo\\UpSertMapping.xml");
 	}
 
 }

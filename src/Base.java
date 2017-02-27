@@ -1237,7 +1237,7 @@ public abstract class Base {
 		}
 	}
 	
-	protected Source CreateCrm(String TableNm, String dbName) {
+	protected Source CreateCrm(String TableNm, String dbName, String DbType) {
 		List<Field> fields = new ArrayList<Field>();
 		
 		String len = null;
@@ -1248,7 +1248,7 @@ public abstract class Base {
 		for(int i = 0; i < TableConf.size(); i++){
 		    a = (List) TableConf.get(i);
 //		    TableList.add(a);
-			if (a.get(0).equals(TableNm)){
+			if (a.get(0).equals(TableNm.replace("O_"+org.tools.GetProperties.getKeyValue("System")+"_", ""))){
 //				TableList.add(a);
 				  String pattern = ".*?\\((.*?)\\).*?";      
 				  // 创建 Pattern 对象
@@ -1266,45 +1266,39 @@ public abstract class Base {
 			    	    	precision = "0";
 			    	    }
 			      }
-                  String DataType = "VARCHAR2";
-                  String sb = new String();
 //                  System.out.println(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")));
-                  switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
-                  {
-                  case "VARCHAR2": sb = NativeDataTypes.Oracle.VARCHAR2; break;
-                  case "NUMBER": sb = NativeDataTypes.Oracle.NUMBER_PS; break;
-                  case "DATE": sb = NativeDataTypes.Oracle.DATE; break;
-                  case "BLOB": sb = NativeDataTypes.Oracle.BLOB; break;
-                  case "CHAR": sb = NativeDataTypes.Oracle.CHAR; break;
-                  case "CLOB": sb = NativeDataTypes.Oracle.CLOB; break;
-                  case "LONG": sb = NativeDataTypes.Oracle.LONG; break;
-                  case "LONGRAW": sb = NativeDataTypes.Oracle.LONGRAW; break;
-                  case "NCHAR": sb = NativeDataTypes.Oracle.NCHAR; break;
-                  case "NCLOB": sb = NativeDataTypes.Oracle.NCLOB; break;
-                  case "TIMESTAMP": sb = NativeDataTypes.Oracle.TIMESTAMP; break;
-                  case "VARCHAR": sb = NativeDataTypes.Oracle.VARCHAR; break;
-                  default: sb = NativeDataTypes.Oracle.VARCHAR2; break; 
-                  }; 
+                 
 //                  System.out.println(a.get(0).toString());
-                  
 				  Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						  sb, len, precision,
+						  org.tools.DataTypeTrans.Trans(a.get(2), DbType), len, precision,
 				  FieldKeyType.NOT_A_KEY, FieldType.SOURCE, false);
+				  
 //				  Field OWNER=new Field("OWNER","OWNER","",NativeDataTypes.Oracle.VARCHAR2,"30","0",FieldKeyType.NOT_A_KEY,FieldType.SOURCE,false);
 				  
 
 				  fields.add(field);
-				  TableName = a.get(0).toString();
+				  TableName = TableNm;
 			}
 		}
-		ConnectionInfo info = getRelationalConnInfo(SourceTargetType.Oracle,
-				dbName);
+		
+		ConnectionInfo info = null;
+		if(DbType == "Oracle"){
+			info = getRelationalConnInfo(SourceTargetType.Oracle,
+					dbName);
+		
+		}else if (DbType == "TD"){
+			info = getRelationalConnInfo(SourceTargetType.Teradata,
+					dbName);
+		}
 		tabSource = new Source(TableName, TableName, "This is oracle table", TableName,
 				info);
 //		System.out.println(a.get(0).toString());
 		tabSource.setFields(fields);
 		return tabSource;
 	}
+	
+	
+	
 
 	public boolean validateRunMode(String value) {
 		int val = Integer.parseInt(value);

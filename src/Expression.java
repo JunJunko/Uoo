@@ -59,7 +59,7 @@ public class Expression extends Base {
      */
     protected void createSources() {
 //        employeeSrc = this.createEmployeeSource();
-    	employeeSrc = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"));
+    	employeeSrc = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "Oracle");
 //    	employeeSrc = this.createMysqlSource(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"));
         folder.addSource( employeeSrc );
     }
@@ -74,22 +74,13 @@ public class Expression extends Base {
 
     public void createMappings() throws Exception {
         // create a mapping
-        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "mapping", "Testing Expression sample" );
+        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("TableNm"), "mapping", "Testing Expression sample" );
         setMapFileName( mapping );
         TransformHelper helper = new TransformHelper( mapping );
         // creating DSQ Transformation
         OutputSet outSet = helper.sourceQualifier( employeeSrc );
         RowSet dsqRS = (RowSet) outSet.getRowSets().get( 0 );
-        // create an expression Transformation
-        // the fields LastName and FirstName are concataneted to produce a new
-        // field fullName
-        
-//        String expr = "integer(1, 0) DW_OPER_FLAG= 1";
-//        TransformField outField = new TransformField( expr );
-//        String expr2 = "data/time DW_ETL_DT= $$PRVS1D_CUR_DATE";
-//        TransformField outField2 = new TransformField( expr2 );
-//        String expr3 = "data/time DW_UPD_TM= sysdate";
-//        TransformField outField3 = new TransformField( expr3 );
+
         
         String expr = "integer(1,0) DW_OPER_FLAG = 1";
         TransformField outField = new TransformField( expr );
@@ -141,18 +132,7 @@ public class Expression extends Base {
     	System.out.println(GetTableList());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.informatica.powercenter.sdk.mapfwk.samples.Base#createSession()
-     */
-//    protected void createSession() throws Exception {
-//        session = new Session( "Session_For_Expression", "Session_For_Expression",
-//                "This is session for expression" );
-//        session.setMapping( this.mapping );
-//    }
-   
-    
+
     
     protected void createSession() throws Exception {
 		// TODO Auto-generated method stub

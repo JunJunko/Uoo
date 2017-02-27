@@ -7,15 +7,14 @@
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.tools.ExcelUtil;
 
 import com.informatica.powercenter.sdk.mapfwk.connection.SourceTargetType;
 import com.informatica.powercenter.sdk.mapfwk.core.InputSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Mapping;
-import com.informatica.powercenter.sdk.mapfwk.core.NativeDataTypes;
+import com.informatica.powercenter.sdk.mapfwk.core.MappingVariable;
+import com.informatica.powercenter.sdk.mapfwk.core.MappingVariableDataTypes;
 import com.informatica.powercenter.sdk.mapfwk.core.RowSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Session;
 import com.informatica.powercenter.sdk.mapfwk.core.Source;
@@ -38,15 +37,15 @@ public class Joiner extends Base {
 	protected Source orderDetailsSource;
 	
 	protected ArrayList<ArrayList<String>> TableConf = ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
-	protected String TableNm = org.tools.GetProperties.getKeyValue("TableNm");
+//	protected String System = org.tools.GetProperties.getKeyValue("System");
 
 	/**
 	 * Create sources
 	 */
 	protected void createSources() {
-		ordersSource = this.CreateCrm(TableNm, org.tools.GetProperties.getKeyValue("SourceFolder"));
+		ordersSource = this.CreateCrm("O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "TD");
 		folder.addSource(ordersSource);
-		orderDetailsSource = this.CreateCrm(TableNm, "test");
+		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "Oracle");
 		folder.addSource(orderDetailsSource);
 	}
 	
@@ -57,7 +56,7 @@ public class Joiner extends Base {
 	 */
 	protected void createTargets() {
 		outputTarget = this.createRelationalTarget( SourceTargetType.Teradata,
-                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm") );
+                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"));
 	}
 
 	protected void createMappings() throws Exception {
@@ -71,86 +70,26 @@ public class Joiner extends Base {
 		RowSet TagSQ = (RowSet) helper.sourceQualifier(orderDetailsSource)
 				.getRowSets().get(0);
 
-		// calculate order cost using the formula
-		// SUM((UnitPrice * Quantity) * (100 - Discount1) / 100) grouped by
-		// OrderId
-//		TransformField orderCost = new TransformField(
-//				"decimal(24,0) OrderCost = (SUM((UnitPrice * Quantity) * (100 - Discount) / 100))");
-//		RowSet ordDetAGG = (RowSet) helper.aggregate(ordDetDSQ, orderCost,
-//				new String[] { "OrderID" }, "Calculate_Order_Cost")
-//				.getRowSets().get(0);
-//		PortPropagationContext orderCostContext = PortPropagationContextFactory
-//				.getContextForIncludeCols(new String[] { "OrderCost", "OrderID" });
-//		InputSet SouInputSet = new InputSet(ordDetAGG, orderCostContext); // propage
-																				// only
-																				// OrderCost
+
 
 		// Pipeline - 2
-		// 导入源的sourceQualifier
+//		// 导入源的sourceQualifier
 		RowSet SouSQ = (RowSet) helper.sourceQualifier(ordersSource)
 				.getRowSets().get(0);
-		
-		InputSet TagInputSet = new InputSet(TagSQ);
+//		
 		InputSet SouInputSet = new InputSet(SouSQ);
-		
-		
-		 
-		
-		
-		//将两个sourceQualifier通过express组件重命名
-		List<TransformField> TagFields = new ArrayList<TransformField>();
-		List<TransformField> SouFields = new ArrayList<TransformField>();
-		 for (int i = 0; i < TableConf.size(); i++){
-	        	
-	        	List<String> a = TableConf.get(i);
 
-	        	if (a.get(0).equals(org.tools.GetProperties.getKeyValue("TableNm"))){
-	        		
-	        		String sb = null;
-	        		switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
-	                {
-	                case "VARCHAR2": sb = a.get(2).replace("VARCHAR2", "String").replace(")", ",0)"); break;
-	                case "NUMBER": sb = a.get(2).replace("NUMBER", "decimal").replace(")", ",0)"); break;
-	                case "DATE": sb = "date/time(29,9)"; break;
-	                case "BLOB": sb = a.get(2).replace("BLOB", "binary").replace(")", ",0)"); break;
-	                case "CHAR": sb = a.get(2).replace("CHAR", "String").replace(")", ",0)"); break;
-	                case "CLOB": sb = a.get(2).replace("CLOB", "binary").replace(")", ",0)"); break;
-	                case "LONG": sb = a.get(2).replace("LONG", "binary").replace(")", ",0)"); break;
-	                case "LONGRAW": sb = a.get(2).replace("LONGRAW", "text").replace(")", ",0)"); break;
-	                case "NCHAR": sb = a.get(2).replace("NCHAR", "String").replace(")", ",0)"); break;
-	                case "NCLOB": sb = a.get(2).replace("NCLOB", "binary").replace(")", ",0)"); break;
-	                case "TIMESTAMP": sb = "date/time(29,9)"; break;
-	                case "VARCHAR": sb = a.get(2).replace("VARCHAR", "String").replace(")", ",0)"); break;
-	                default: sb = "String(50,0)"; break; 
-	                };
-//	        		
-//	                System.out.println(sb);
-	        	    String exp_t = sb+" "+a.get(1)+"_t"+" = "+a.get(1);
-	        	    String exp_s = sb+" "+a.get(1)+"_s"+" = "+a.get(1);
-	        	    TransformField outField_t = new TransformField( exp_t );
-	        	    TransformField outField_s = new TransformField( exp_s );
-	        	    
-	        	    TagFields.add( outField_t );
-	        	    SouFields.add( outField_s );
-	                
-	        	}
-	        	System.out.println(a);
-		       
-		       
-		 }   
-		 RowSet TagExp = (RowSet) helper.expression(TagSQ, TagFields, "TagReNameExp").getRowSets().get(0);
-	     RowSet SouExp = (RowSet) helper.expression(SouSQ, SouFields, "SouReNameExp").getRowSets().get(0);      
-		
 
+	   
 
 		// Join Pipeline-1 to Pipeline-2
-		List<InputSet> inputSets_s = new ArrayList<InputSet>();
-		inputSets_s.add(SouInputSet); // collection includes only the detail
+		List<InputSet> inputSets = new ArrayList<InputSet>();
+		inputSets.add(SouInputSet); // collection includes only the detail
 		
-		List<InputSet> inputSets_t = new ArrayList<InputSet>();
-		inputSets_t.add(SouInputSet); // collection includes only the detail
 
-		RowSet joinRowSet = (RowSet) helper.join(inputSets_s,
+		
+        //将SQ连到Join组件
+		RowSet joinRowSet = (RowSet) helper.join(inputSets,
 				new InputSet(TagSQ), "ROW_ID = IN_ROW_ID",
 				"Join_Order_And_Details").getRowSets().get(0);
 
@@ -167,12 +106,11 @@ public class Joiner extends Base {
 //		String expr = "integer(1,0) DW_OPER_FLAG = 1";
 //        TransformField outField = new TransformField( expr );
 //        transFields.add( outField );
-        String len = null;
-        String precision = null;
+
         String Column = "";
         for (int i = 0; i < TableConf.size(); i++){       	
         	List<String> a = TableConf.get(i); 
-        	if (a.get(0).equals(TableNm)){
+        	if (a.get(0).equals(org.tools.GetProperties.getKeyValue("TableNm"))){
         		
         		String sb = null;
         		switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
@@ -209,9 +147,21 @@ public class Joiner extends Base {
         }
 //        String[] toBeStored = Column.toArray(new String[Column.size()]);   
 
-        
-		TransformField totalOrderCost = new TransformField(
-				"decimal(24,0) TotalOrderCost = OrderCost + Freight");
+        String exp1 = "integer(1, 0) DW_OPER_FLAG = decode(true,isnull(ROW_ID), 0, ROW_ID = IN_ROW_ID AND LAST_UPD = IN_LAST_UPD,2, 1)";
+        String exp2 = "date/time(29, 9) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
+        String exp3 = "date/time(29, 9) DW_UPD_TM = decode(true,isnull(ROW_ID), 0, ROW_ID = SESSSTARTTIME";
+        TransformField outField1 = new TransformField( exp1 );
+        TransformField outField2 = new TransformField( exp2 );
+        TransformField outField3 = new TransformField( exp3 );
+        transFields.add( outField1 );
+        transFields.add( outField2 );
+        transFields.add( outField3 );
+
+		TransformField totalOrderCost = null;
+//				new TransformField(
+//				"decimal(24,0) TotalOrderCost = OrderCost + Freight");
+		
+		
 		
 		RowSet expRowSet = (RowSet) helper.expression(joinRowSet,
 				transFields, "Expression_Total_Order_Cost").getRowSets()
@@ -241,50 +191,59 @@ public class Joiner extends Base {
 		
 		
 		
-		List<TransformField> transFields3 = new ArrayList<TransformField>();
-		 for (int i = 0; i < TableConf.size(); i++){
-			 List<String> a = TableConf.get(i);	        	
-	        	if (a.get(0).equals(org.tools.GetProperties.getKeyValue("TableNm"))){
-	        		
-	        		String sb = null;
-	        		switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
-	                {
-	                case "VARCHAR2": sb = a.get(2).replace("VARCHAR2", "String").replace(")", ",0)"); break;
-	                case "NUMBER": sb = a.get(2).replace("NUMBER", "decimal").replace(")", ",0)"); break;
-	                case "DATE": sb = "date/time(29,9)"; break;
-	                case "BLOB": sb = a.get(2).replace("BLOB", "binary").replace(")", ",0)"); break;
-	                case "CHAR": sb = a.get(2).replace("CHAR", "String").replace(")", ",0)"); break;
-	                case "CLOB": sb = a.get(2).replace("CLOB", "binary").replace(")", ",0)"); break;
-	                case "LONG": sb = a.get(2).replace("LONG", "binary").replace(")", ",0)"); break;
-	                case "LONGRAW": sb = a.get(2).replace("LONGRAW", "text").replace(")", ",0)"); break;
-	                case "NCHAR": sb = a.get(2).replace("NCHAR", "String").replace(")", ",0)"); break;
-	                case "NCLOB": sb = a.get(2).replace("NCLOB", "binary").replace(")", ",0)"); break;
-	                case "TIMESTAMP": sb = "date/time(29,9)"; break;
-	                case "VARCHAR": sb = a.get(2).replace("VARCHAR", "String").replace(")", ",0)"); break;
-	                default: sb = "String(50,0)"; break; 
-	                };
+//		List<TransformField> transFields3 = new ArrayList<TransformField>();
+//		 for (int i = 0; i < TableConf.size(); i++){
+//			 List<String> a = TableConf.get(i);	        	
+//	        	if (a.get(0).equals(org.tools.GetProperties.getKeyValue("org.tools.GetProperties.getKeyValue("TableNm")"))){
 //	        		
-//	                System.out.println(sb);
-	        	    String exp3 = sb+" "+a.get(1)+"_test"+" = "+a.get(1)+"_out";
-	        	    System.out.println(exp3);
-	        	    TransformField outField = new TransformField( exp3 );
-	                transFields3.add( outField );
-	             
-	                
-	        	}
-	        }
-		 
-
-		    
-			RowSet expRowSet3 = (RowSet) helper.expression(expRowSet2,
-					transFields3, "Expression_Total_Order_Cost2").getRowSets()
-					.get(0);
+//	        		String sb = null;
+//	        		switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
+//	                {
+//	                case "VARCHAR2": sb = a.get(2).replace("VARCHAR2", "String").replace(")", ",0)"); break;
+//	                case "NUMBER": sb = a.get(2).replace("NUMBER", "decimal").replace(")", ",0)"); break;
+//	                case "DATE": sb = "date/time(29,9)"; break;
+//	                case "BLOB": sb = a.get(2).replace("BLOB", "binary").replace(")", ",0)"); break;
+//	                case "CHAR": sb = a.get(2).replace("CHAR", "String").replace(")", ",0)"); break;
+//	                case "CLOB": sb = a.get(2).replace("CLOB", "binary").replace(")", ",0)"); break;
+//	                case "LONG": sb = a.get(2).replace("LONG", "binary").replace(")", ",0)"); break;
+//	                case "LONGRAW": sb = a.get(2).replace("LONGRAW", "text").replace(")", ",0)"); break;
+//	                case "NCHAR": sb = a.get(2).replace("NCHAR", "String").replace(")", ",0)"); break;
+//	                case "NCLOB": sb = a.get(2).replace("NCLOB", "binary").replace(")", ",0)"); break;
+//	                case "TIMESTAMP": sb = "date/time(29,9)"; break;
+//	                case "VARCHAR": sb = a.get(2).replace("VARCHAR", "String").replace(")", ",0)"); break;
+//	                default: sb = "String(50,0)"; break; 
+//	                };
+////	        		
+////	                System.out.println(sb);
+//	        	    String exp3 = sb+" "+a.get(1)+"_test"+" = "+a.get(1)+"_out";
+//	        	    System.out.println(exp3);
+//	        	    TransformField outField = new TransformField( exp3 );
+//	                transFields3.add( outField );
+//	             
+//	                
+//	        	}
+//	        }
+//		 
+//
+//		    
+//			RowSet expRowSet3 = (RowSet) helper.expression(expRowSet2,
+//					transFields3, "Expression_Total_Order_Cost2").getRowSets()
+//					.get(0);
+		
+		
+		
+		RowSet filterRS = (RowSet) helper.updateStrategy( expRowSet2,
+                "decode(true, DW_OPER_FLAG == 1, DD_INSERT, DW_OPER_FLAG == 2, DD_REJECT, DD_UPDATE)", "updateStrategy_transform" )
+                .getRowSets().get( 0 );
 
 		
 
 		// write to target
-		mapping.writeTarget(new InputSet(expRowSet3, exclOrderID2),
+		mapping.writeTarget(new InputSet(filterRS, exclOrderID2),
 				outputTarget);
+		//增加参数
+		MappingVariable mappingVar = new MappingVariable( MappingVariableDataTypes.STRING, "0",
+                "mapping variable example", true, "$$PRVS1D_CUR_DATE", "20", "0", true );
 
 		// add mapping to folder
 		folder.addMapping(mapping);
