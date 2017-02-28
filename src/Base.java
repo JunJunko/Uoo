@@ -1109,9 +1109,9 @@ public abstract class Base {
 		
 		rep.save(outputContext, doImport);
 		System.out.println("Mapping generated in " + mapFileName);
-		String XmlData = org.tools.ConFileContent.readToString("M_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
+//		String XmlData = org.tools.ConFileContent.readToString("M_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 //        System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
-		org.tools.ConFileContent.writeLog(XmlData);
+//		org.tools.ConFileContent.writeLog(XmlData);
 	}
 
 	protected void setMapFileName(Mapping mapping) {

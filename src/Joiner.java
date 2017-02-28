@@ -21,6 +21,7 @@ import com.informatica.powercenter.sdk.mapfwk.core.Source;
 import com.informatica.powercenter.sdk.mapfwk.core.Target;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformField;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformHelper;
+import com.informatica.powercenter.sdk.mapfwk.core.TransformationProperties;
 import com.informatica.powercenter.sdk.mapfwk.core.Workflow;
 import com.informatica.powercenter.sdk.mapfwk.portpropagation.PortPropagationContext;
 import com.informatica.powercenter.sdk.mapfwk.portpropagation.PortPropagationContextFactory;
@@ -87,10 +88,11 @@ public class Joiner extends Base {
 		inputSets.add(SouInputSet); // collection includes only the detail
 		
 
-		
+        TransformationProperties JoinType = new TransformationProperties();
+		JoinType.setProperty("Join Type", "Full Outer Join");
         //将SQ连到Join组件
 		RowSet joinRowSet = (RowSet) helper.join(inputSets,
-				new InputSet(TagSQ), "ROW_ID = IN_ROW_ID",
+				new InputSet(TagSQ), "ROW_ID = IN_ROW_ID",JoinType,
 				"Join_Order_And_Details").getRowSets().get(0);
 
 		
@@ -166,6 +168,8 @@ public class Joiner extends Base {
 		RowSet expRowSet = (RowSet) helper.expression(joinRowSet,
 				transFields, "Expression_Total_Order_Cost").getRowSets()
 				.get(0);
+		
+		
 		
 
    
@@ -244,7 +248,7 @@ public class Joiner extends Base {
 		//增加参数
 		MappingVariable mappingVar = new MappingVariable( MappingVariableDataTypes.STRING, "0",
                 "mapping variable example", true, "$$PRVS1D_CUR_DATE", "20", "0", true );
-
+		mapping.addMappingVariable( mappingVar );
 		// add mapping to folder
 		folder.addMapping(mapping);
 		 

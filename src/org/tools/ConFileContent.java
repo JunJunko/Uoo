@@ -92,7 +92,7 @@ public class ConFileContent {
 						// System.out.println("µÚ" + i + "ÐÐ£º" + sourceStrArray);
 						// System.out.println(line.replaceAll("TOFIELD=\"(.*?)_out\"",
 						// "TOFIELD=\""+ReplaceStr+"\""));
-						System.out.println("++++++++++++++++++"+ReplaceStr);
+//						System.out.println("++++++++++++++++++"+ReplaceStr);
 						Data.append(line.replaceAll("TOFIELD=\".*?_out\"", "TOFIELD=\"" + ReplaceStr + "\""));
 						Data.append("\n");
 					}else{
