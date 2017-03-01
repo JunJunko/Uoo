@@ -30,7 +30,7 @@ public class CallPmrepCom {
     } 
 	
 	public static List<String> getFileName() {
-        String path = "D:\\workspace\\Uoo\\"+org.tools.GetProperties.getKeyValue("System"); // Â·¾¶
+        String path = "D:\\workspace\\Uoo\\xml"; // Â·¾¶
         File f = new File(path);
         if (!f.exists()) {
             System.out.println(path + " not exists");

@@ -95,7 +95,7 @@ public abstract class Base {
 	 * Creates a folder
 	 */
 	protected void createFolder() {
-		folder = new Folder("CRM", "CRM",
+		folder = new Folder("CRM_INCREMENT", "CRM_INCREMENT",
 				"This is a folder containing java mapping samples");
 		rep.addFolder(folder);
 		
@@ -1109,9 +1109,9 @@ public abstract class Base {
 		
 		rep.save(outputContext, doImport);
 		System.out.println("Mapping generated in " + mapFileName);
-//		String XmlData = org.tools.ConFileContent.readToString("M_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
+//		String XmlData = org.tools.ConFileContent.readToString("M_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 //        System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
-//		org.tools.ConFileContent.writeLog(XmlData);
+		org.tools.ConFileContent.writeLog(org.tools.ConFileContent.ReplaceColumnNm("M_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml"));
 	}
 
 	protected void setMapFileName(Mapping mapping) {
@@ -1261,7 +1261,10 @@ public abstract class Base {
 			    	    if (sourceStrArray.length == 3){
 			    	        len = sourceStrArray[0];
 			    	    	precision = sourceStrArray[1];
-			    	    }else{
+			    	    }else if(org.tools.DataTypeTrans.Trans(a.get(2), DbType) == "timestamp"){
+			    	    	len = "26";
+			    	    	precision = "6";
+			    	    }else {
 			    	    	len = sourceStrArray[0];
 			    	    	precision = "0";
 			    	    }

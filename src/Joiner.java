@@ -6,17 +6,24 @@
  */
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import org.tools.ExcelUtil;
 
+import com.informatica.powercenter.sdk.mapfwk.connection.ConnectionInfo;
+import com.informatica.powercenter.sdk.mapfwk.connection.ConnectionProperties;
+import com.informatica.powercenter.sdk.mapfwk.connection.ConnectionPropsConstants;
 import com.informatica.powercenter.sdk.mapfwk.connection.SourceTargetType;
+import com.informatica.powercenter.sdk.mapfwk.core.DSQTransformation;
 import com.informatica.powercenter.sdk.mapfwk.core.InputSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Mapping;
 import com.informatica.powercenter.sdk.mapfwk.core.MappingVariable;
 import com.informatica.powercenter.sdk.mapfwk.core.MappingVariableDataTypes;
+import com.informatica.powercenter.sdk.mapfwk.core.PartitionPointDetails;
 import com.informatica.powercenter.sdk.mapfwk.core.RowSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Session;
+import com.informatica.powercenter.sdk.mapfwk.core.SessionPropsConstants;
 import com.informatica.powercenter.sdk.mapfwk.core.Source;
 import com.informatica.powercenter.sdk.mapfwk.core.Target;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformField;
@@ -37,7 +44,7 @@ public class Joiner extends Base {
 
 	protected Source orderDetailsSource;
 	
-	protected ArrayList<ArrayList<String>> TableConf = ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
+	protected static ArrayList<ArrayList<String>> TableConf = ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
 //	protected String System = org.tools.GetProperties.getKeyValue("System");
 
 	/**
@@ -61,8 +68,8 @@ public class Joiner extends Base {
 	}
 
 	protected void createMappings() throws Exception {
-		mapping = new Mapping("UpSertMapping", "UpSertMapping",
-				"This is join sample");
+        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("TableNm"), "mapping", "Testing upsert sample" );
+
 		setMapFileName(mapping);
 		TransformHelper helper = new TransformHelper(mapping);
 
@@ -75,13 +82,23 @@ public class Joiner extends Base {
 
 		// Pipeline - 2
 //		// 导入源的sourceQualifier
+
 		RowSet SouSQ = (RowSet) helper.sourceQualifier(ordersSource)
 				.getRowSets().get(0);
 //		
-		InputSet SouInputSet = new InputSet(SouSQ);
+		
+		
+		
+		
+		//将SQ进来的数据进行排序
+		RowSet TagSort = helper.sorter( TagSQ, new String[] {"ROW_ID"},
+                new boolean[] { false }, "SRT_"+org.tools.GetProperties.getKeyValue("TableNm") ).getRowSets().get( 0 );
 
+		
+		RowSet SouSort = helper.sorter( SouSQ, new String[] {"ROW_ID"},
+                new boolean[] { false }, "SRT_"+"O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm") ).getRowSets().get( 0 );
 
-	   
+		InputSet SouInputSet = new InputSet(SouSort);
 
 		// Join Pipeline-1 to Pipeline-2
 		List<InputSet> inputSets = new ArrayList<InputSet>();
@@ -92,8 +109,8 @@ public class Joiner extends Base {
 		JoinType.setProperty("Join Type", "Full Outer Join");
         //将SQ连到Join组件
 		RowSet joinRowSet = (RowSet) helper.join(inputSets,
-				new InputSet(TagSQ), "ROW_ID = IN_ROW_ID",JoinType,
-				"Join_Order_And_Details").getRowSets().get(0);
+				new InputSet(TagSort), "ROW_ID = IN_ROW_ID",JoinType,
+				"JNR_"+org.tools.GetProperties.getKeyValue("TableNm")).getRowSets().get(0);
 
 		
 
@@ -150,8 +167,8 @@ public class Joiner extends Base {
 //        String[] toBeStored = Column.toArray(new String[Column.size()]);   
 
         String exp1 = "integer(1, 0) DW_OPER_FLAG = decode(true,isnull(ROW_ID), 0, ROW_ID = IN_ROW_ID AND LAST_UPD = IN_LAST_UPD,2, 1)";
-        String exp2 = "date/time(29, 9) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
-        String exp3 = "date/time(29, 9) DW_UPD_TM = decode(true,isnull(ROW_ID), 0, ROW_ID = SESSSTARTTIME";
+        String exp2 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
+        String exp3 = "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
         TransformField outField1 = new TransformField( exp1 );
         TransformField outField2 = new TransformField( exp2 );
         TransformField outField3 = new TransformField( exp3 );
@@ -166,7 +183,7 @@ public class Joiner extends Base {
 		
 		
 		RowSet expRowSet = (RowSet) helper.expression(joinRowSet,
-				transFields, "Expression_Total_Order_Cost").getRowSets()
+				transFields, "EXP_"+org.tools.GetProperties.getKeyValue("TableNm")).getRowSets()
 				.get(0);
 		
 		
@@ -188,56 +205,12 @@ public class Joiner extends Base {
         InputSet joinInputSet2 = new InputSet(expRowSet, exclOrderID2);
 		
 		RowSet expRowSet2 = (RowSet) helper.expression(joinInputSet2,
-				totalOrderCost, "Expression_Total_Order_Cost1").getRowSets()
+				totalOrderCost, "EXP_"+org.tools.GetProperties.getKeyValue("TableNm")+"1").getRowSets()
 				.get(0);
 		
 		
-		
-		
-		
-//		List<TransformField> transFields3 = new ArrayList<TransformField>();
-//		 for (int i = 0; i < TableConf.size(); i++){
-//			 List<String> a = TableConf.get(i);	        	
-//	        	if (a.get(0).equals(org.tools.GetProperties.getKeyValue("org.tools.GetProperties.getKeyValue("TableNm")"))){
-//	        		
-//	        		String sb = null;
-//	        		switch(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")))
-//	                {
-//	                case "VARCHAR2": sb = a.get(2).replace("VARCHAR2", "String").replace(")", ",0)"); break;
-//	                case "NUMBER": sb = a.get(2).replace("NUMBER", "decimal").replace(")", ",0)"); break;
-//	                case "DATE": sb = "date/time(29,9)"; break;
-//	                case "BLOB": sb = a.get(2).replace("BLOB", "binary").replace(")", ",0)"); break;
-//	                case "CHAR": sb = a.get(2).replace("CHAR", "String").replace(")", ",0)"); break;
-//	                case "CLOB": sb = a.get(2).replace("CLOB", "binary").replace(")", ",0)"); break;
-//	                case "LONG": sb = a.get(2).replace("LONG", "binary").replace(")", ",0)"); break;
-//	                case "LONGRAW": sb = a.get(2).replace("LONGRAW", "text").replace(")", ",0)"); break;
-//	                case "NCHAR": sb = a.get(2).replace("NCHAR", "String").replace(")", ",0)"); break;
-//	                case "NCLOB": sb = a.get(2).replace("NCLOB", "binary").replace(")", ",0)"); break;
-//	                case "TIMESTAMP": sb = "date/time(29,9)"; break;
-//	                case "VARCHAR": sb = a.get(2).replace("VARCHAR", "String").replace(")", ",0)"); break;
-//	                default: sb = "String(50,0)"; break; 
-//	                };
-////	        		
-////	                System.out.println(sb);
-//	        	    String exp3 = sb+" "+a.get(1)+"_test"+" = "+a.get(1)+"_out";
-//	        	    System.out.println(exp3);
-//	        	    TransformField outField = new TransformField( exp3 );
-//	                transFields3.add( outField );
-//	             
-//	                
-//	        	}
-//	        }
-//		 
-//
-//		    
-//			RowSet expRowSet3 = (RowSet) helper.expression(expRowSet2,
-//					transFields3, "Expression_Total_Order_Cost2").getRowSets()
-//					.get(0);
-		
-		
-		
 		RowSet filterRS = (RowSet) helper.updateStrategy( expRowSet2,
-                "decode(true, DW_OPER_FLAG == 1, DD_INSERT, DW_OPER_FLAG == 2, DD_REJECT, DD_UPDATE)", "updateStrategy_transform" )
+                "IIF(DW_OPER_FLAG = 2,DD_REJECT, DD_UPDATE)", "UPD_"+org.tools.GetProperties.getKeyValue("TableNm") )
                 .getRowSets().get( 0 );
 
 		
@@ -259,9 +232,10 @@ public class Joiner extends Base {
 	 */
 	protected void createWorkflow() throws Exception {
 
-		workflow = new Workflow("Workflow_for_Joiner", "Workflow_for_joiner",
+		workflow = new Workflow("WF_"+org.tools.GetProperties.getKeyValue("TableNm"), "WF_"+org.tools.GetProperties.getKeyValue("TableNm"),
 				"This workflow for joiner");
 		workflow.addSession(session);
+        workflow.assignIntegrationService(org.tools.GetProperties.getKeyValue("Integration"), org.tools.GetProperties.getKeyValue("Domain"));
 		folder.addWorkFlow(workflow);
 
 	}
@@ -271,7 +245,11 @@ public class Joiner extends Base {
 			Joiner joinerTrans = new Joiner();
 			if (args.length > 0) {
 				if (joinerTrans.validateRunMode(args[0])) {
-					joinerTrans.execute();
+					ArrayList<String> a = GetTableList();
+                	for(int i = 0; i < a.size(); i++){
+                		org.tools.GetProperties.writeProperties("TableNm", a.get(i));
+					    joinerTrans.execute();
+                	}
 				}
 			} else {
 				joinerTrans.printUsage();
@@ -282,6 +260,23 @@ public class Joiner extends Base {
 		}
 
 	}
+	
+	  public static ArrayList<String> GetTableList() {   
+	    	ArrayList<String> TL = new ArrayList<String> ();
+	      
+	        for (int i = 0; i < TableConf.size(); i++){
+	        	ArrayList<String> a = (ArrayList<String>) TableConf.get(i);
+	        	if(!TL.contains(a.get(0))){
+	        		TL.add(a.get(0));
+	        		
+	        	}
+	        }  
+	        
+	        return TL;
+	    }
+
+		
+	 
 
 	/*
 	 * (non-Javadoc)
@@ -289,9 +284,58 @@ public class Joiner extends Base {
 	 * @see com.informatica.powercenter.sdk.mapfwk.samples.Base#createSession()
 	 */
 	protected void createSession() throws Exception {
-		session = new Session("Session_For_Joiner", "Session_For_Joiner",
-				"This is session for joiner");
-		session.setMapping(this.mapping);
+		// TODO Auto-generated method stub
+	session = new Session("S_"+org.tools.GetProperties.getKeyValue("TableNm"), "S_"+org.tools.GetProperties.getKeyValue("TableNm"),
+		"This is session for Expression DMO Tx");
+	session.setMapping(this.mapping);
+	
+	
+	//Adding Connection Objects for substitution mask option
+	ConnectionInfo info = new ConnectionInfo(SourceTargetType.Oracle);
+	ConnectionProperties cprops = info.getConnProps();
+	cprops.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "Oracle");
+	cprops.setProperty(ConnectionPropsConstants.CONNECTIONNUMBER, "1");
+
+	
+	ConnectionInfo info2 = new ConnectionInfo(SourceTargetType.Oracle);
+	ConnectionProperties cprops2 = info2.getConnProps();
+	cprops2.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "Oracle");
+	cprops2.setProperty(ConnectionPropsConstants.CONNECTIONNUMBER, "2");
+	List<ConnectionInfo> cons = new ArrayList<ConnectionInfo>();
+	cons.add(info);
+	cons.add(info2);
+//	session.addConnectionInfosObject(dmo, cons);
+	
+	//Overriding source connection in Seesion level
+	ConnectionInfo SrcConOra = new ConnectionInfo(SourceTargetType.Oracle);
+	SrcConOra.setConnectionVariable("$DBConnection_CRM");
+	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
+	session.addConnectionInfoObject(dsq, SrcConOra);
+	
+	
+	ConnectionInfo SrcConTD = new ConnectionInfo(SourceTargetType.Teradata_PT_Connection);
+	SrcConTD.setConnectionVariable("$DBConnection_TD_E");
+	DSQTransformation Tdsq = (DSQTransformation)mapping.getTransformation("SQ_"+"O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"));
+	session.addConnectionInfoObject(Tdsq, SrcConTD);
+	//session.addConnectionInfoObject(jobSourceObj, newSrcCon);
+	
+	//Overriding target connection in Seesion level
+	ConnectionInfo newTgtCon = new ConnectionInfo(SourceTargetType.Teradata_PT_Connection);
+
+	ConnectionProperties newTgtConprops = newTgtCon.getConnProps();
+	
+	
+	newTgtConprops.setProperty("Parameter Filename", "$PMRootDir/EDWParam/edw.param");
+	
+	
+	newTgtCon.setConnectionVariable("$DBConnection_TD_U");
+//	ConnectionProperties newTgtConprops = newTgtCon.getConnProps();
+//	newTgtConprops.setProperty( ConnectionPropsConstants.CONNECTIONNAME, "$DBConnection_TD");
+
+
+	session.addConnectionInfoObject(outputTarget, newTgtCon);
+	//Setting session level property.
+//	session.addSessionTransformInstanceProperties(dmo, props);
 
 	}
 }

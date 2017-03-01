@@ -68,7 +68,7 @@ public class ConFileContent {
 
 			String ConReg = ".*CONNECTOR.*"; // 判断字符串中是否含有CONNECTOR
 			String Conregex = "TOFIELD=\"(.*?)_out\"";
-			String TransType = ".*FROMINSTANCE=\"updateStrategy_transform\".*";
+			String TransType = ".*FROMINSTANCE=\"UPD_.*";
 			while ((line = bufReader.readLine()) != null) {
 
 				if (line.matches(Tagregex) && line.matches(TagReg)) {
@@ -78,7 +78,7 @@ public class ConFileContent {
 					if (m.find()) {
 						String ReplaceStr = m.group(1);
 						// System.out.println("第" + i + "行：" + sourceStrArray);
-						System.out.println(line.replaceAll(" NAME=\".*?_out\"", " NAME=\"" + ReplaceStr + "\""));
+//						System.out.println(line.replaceAll(" NAME=\".*?_out\"", " NAME=\"" + ReplaceStr + "\""));
 						Data.append(line.replaceAll(" NAME=\".*?_out\"", " NAME=\"" + ReplaceStr + "\""));
 						Data.append("\n");
 					}
@@ -111,7 +111,10 @@ public class ConFileContent {
 			e.printStackTrace();
 			System.out.println("读取" + filename + "出错！");
 		}
-		return Data.toString();
+		return Data.toString().replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>")
+				.replace("BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"timestamp\" KEYTYPE=\"NOT A KEY\" PRECISION=\"19\"", "BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"date\" KEYTYPE=\"NOT A KEY\" PRECISION=\"10\"")
+				.replace("\"Update else Insert\" VALUE=\"NO", "\"Update else Insert\" VALUE=\"YES")
+				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"");
 
 	}
 
@@ -124,7 +127,7 @@ public class ConFileContent {
 		// System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\"
 		// VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 		// writeLog(XmlData);
-		writeLog(ReplaceColumnNm("D:\\workspace\\Uoo\\UpSertMapping.xml"));
+		writeLog(ReplaceColumnNm("D:\\workspace\\Uoo\\M_CX_COMPANY_PS.xml"));
 	}
 
 }

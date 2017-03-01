@@ -136,7 +136,7 @@ public class Expression extends Base {
     
     protected void createSession() throws Exception {
 		// TODO Auto-generated method stub
-	session = new Session("s_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "s_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"),
+	session = new Session("s_"+org.tools.GetProperties.getKeyValue("TableNm"), "s_"+org.tools.GetProperties.getKeyValue("TableNm"),
 		"This is session for Expression DMO Tx");
 	session.setMapping(this.mapping);
 	
