@@ -20,10 +20,8 @@ import com.informatica.powercenter.sdk.mapfwk.core.InputSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Mapping;
 import com.informatica.powercenter.sdk.mapfwk.core.MappingVariable;
 import com.informatica.powercenter.sdk.mapfwk.core.MappingVariableDataTypes;
-import com.informatica.powercenter.sdk.mapfwk.core.PartitionPointDetails;
 import com.informatica.powercenter.sdk.mapfwk.core.RowSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Session;
-import com.informatica.powercenter.sdk.mapfwk.core.SessionPropsConstants;
 import com.informatica.powercenter.sdk.mapfwk.core.Source;
 import com.informatica.powercenter.sdk.mapfwk.core.Target;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformField;
@@ -105,11 +103,13 @@ public class Joiner extends Base {
 		inputSets.add(SouInputSet); // collection includes only the detail
 		
 
-        TransformationProperties JoinType = new TransformationProperties();
-		JoinType.setProperty("Join Type", "Full Outer Join");
+        TransformationProperties JoinProperty = new TransformationProperties();
+        JoinProperty.setProperty("Join Type", "Full Outer Join");
+        JoinProperty.setProperty("Joiner Data Cache Size", "auto");
+        JoinProperty.setProperty("Joiner Index Cache Size", "auto");
         //将SQ连到Join组件
 		RowSet joinRowSet = (RowSet) helper.join(inputSets,
-				new InputSet(TagSort), "ROW_ID = IN_ROW_ID",JoinType,
+				new InputSet(TagSort), "ROW_ID = IN_ROW_ID",JoinProperty,
 				"JNR_"+org.tools.GetProperties.getKeyValue("TableNm")).getRowSets().get(0);
 
 		
