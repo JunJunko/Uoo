@@ -37,7 +37,7 @@ public class ExcelUtil {
 	
 	
     public static void main(String[] args) {  
-        System.out.println( readXml("F:\\g工作资料\\shsnc\\无限极\\test.xlsx").get(1));
+        System.out.println( readXml("F:\\g工作资料\\shsnc\\无限极\\test.xlsx"));
 
     }  
     
@@ -71,9 +71,11 @@ public class ExcelUtil {
             Cell cell_a = null;  
             Cell cell_b = null;  
             Cell cell_c = null;
+            Cell cell_d = null;
             String cellValue;
             String cellValue2;
             String cellValue3;
+            String cellValue4;
             HashMap<String, Integer> Hm = new HashMap();
             
             
@@ -100,9 +102,19 @@ public class ExcelUtil {
              cellValue3 = cell_c.getStringCellValue().trim();
              TypeList.add(cellValue3);
              
+             row = sheet.getRow(i);          //取得第i行  
+             cell_d = row.getCell(4);        //取得i行的第一列  
+             if(!(cell_d == null)){
+                 cellValue4 = cell_d.getStringCellValue().trim();
+             }else{
+            	 cellValue4 = "";
+             }
+             TypeList.add(cellValue4);
+             
              HashList.add(cellValue);
              HashList.add(cellValue2);
              HashList.add(cellValue3);
+             HashList.add(cellValue4);
              
              ReList.add(HashList);
              

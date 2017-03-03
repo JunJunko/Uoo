@@ -27,6 +27,7 @@ public class DataTypeTrans {
 		
         }; 
 		}else if(DbType == "TD"){
+//			System.out.println(DataType.toString());
 			switch(DataType.toString().substring(0, DataType.toString().indexOf("(")))
 	        {
 	        case "VARCHAR2": sb = NativeDataTypes.Teradata.VARCHAR; break;

@@ -68,7 +68,7 @@ public class CallPmrepCom {
 			List<String> FN = getFileName();
 			writeLog("D:\\software\\Informatica\\9.6.1\\clients\\PowerCenterClient\\client\\bin\\pmrep connect -r dev_store_edw  -h etldsvr01 -o 6005 -n NC_ZJK -x 499099784\r");
 			for (int i = 0; i < FN.size(); i++){
-				writeLog("D:\\software\\Informatica\\9.6.1\\clients\\PowerCenterClient\\client\\bin\\pmrep objectImport -i D:\\workspace\\Uoo\\"+org.tools.GetProperties.getKeyValue("System")+"\\"+FN.get(i)+" -c D:\\workspace\\Uoo\\sample_import_controlfile.xml\r");
+				writeLog("D:\\software\\Informatica\\9.6.1\\clients\\PowerCenterClient\\client\\bin\\pmrep objectImport -i F:\\shsnc\\项目\\无限极\\import_xml\\0302\\全删全插\\"+FN.get(i)+" -c F:\\shsnc\\项目\\无限极\\import_xml\\0302\\全删全插\\sample_import_controlfile.xml\r");
 			}
 	
 	}

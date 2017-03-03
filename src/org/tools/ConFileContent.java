@@ -50,6 +50,7 @@ public class ConFileContent {
 			out.write(sb.toString().getBytes("GBK"));// 注意需要转换对应的字符集
 			out.close();
 		} catch (IOException ex) {
+			ex.printStackTrace();
 			System.out.println(ex.getStackTrace());
 		}
 		return str;
@@ -113,7 +114,7 @@ public class ConFileContent {
 		}
 		return Data.toString().replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>")
 				.replace("BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"timestamp\" KEYTYPE=\"NOT A KEY\" PRECISION=\"19\"", "BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"date\" KEYTYPE=\"NOT A KEY\" PRECISION=\"10\"")
-				.replace("\"Update else Insert\" VALUE=\"NO", "\"Update else Insert\" VALUE=\"YES")
+//				.replace("\"Update else Insert\" VALUE=\"NO", "\"Update else Insert\" VALUE=\"YES")
 				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"");
 
 	}
@@ -127,7 +128,7 @@ public class ConFileContent {
 		// System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\"
 		// VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 		// writeLog(XmlData);
-		writeLog(ReplaceColumnNm("D:\\workspace\\Uoo\\M_CX_COMPANY_PS.xml"));
+		writeLog(ReplaceColumnNm("D:\\workspace\\Uoo\\M_CX_ACCESS_LOG.xml"));
 	}
 
 }

@@ -85,10 +85,10 @@ public class Expression extends Base {
         String expr = "integer(1,0) DW_OPER_FLAG = 1";
         TransformField outField = new TransformField( expr );
         
-        String expr2 = "date/time(29,9) DW_ETL_DT= to_date($$PRVS1D_CUR_DATE, 'yyyymmdd')";
+        String expr2 = "date/time(10, 0) DW_ETL_DT= to_date($$PRVS1D_CUR_DATE, 'yyyymmdd')";
         TransformField outField2 = new TransformField( expr2 );
         
-        String expr3 = "date/time(29,9) DW_UPD_TM= sysdate";
+        String expr3 = "date/time(19, 0) DW_UPD_TM= SESSSTARTTIME";
         TransformField outField3 = new TransformField( expr3 );
         
         List<TransformField> transFields = new ArrayList<TransformField>();
@@ -175,7 +175,7 @@ public class Expression extends Base {
 	
 	newTgtConprops.setProperty(SessionPropsConstants.PARAMETER_FILENAME, "$PMRootDir/EDWParam/edw.param");
 	
-	newTgtCon.setConnectionVariable("$DBConnection_TD");
+	newTgtCon.setConnectionVariable("$DBConnection_TD_U");
 //	ConnectionProperties newTgtConprops = newTgtCon.getConnProps();
 //	newTgtConprops.setProperty( ConnectionPropsConstants.CONNECTIONNAME, "$DBConnection_TD");
 
@@ -192,7 +192,7 @@ public class Expression extends Base {
      * @see com.informatica.powercenter.sdk.mapfwk.samples.Base#createWorkflow()
      */
     protected void createWorkflow() throws Exception {
-        workflow = new Workflow( "wf_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "wf_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"),
+        workflow = new Workflow( "WF_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "WF_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"),
                 "This workflow for expression" );
 //        workflow.setParentFolder(folder);
 //        List<String> listOfParams = workflow.getListOfParameters();

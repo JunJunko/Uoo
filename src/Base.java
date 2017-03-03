@@ -1245,6 +1245,8 @@ public abstract class Base {
 		Source tabSource = null;
 		List<String> a = null; 
 		String TableName = null;
+		FieldKeyType ColType = null;
+		Boolean NullEable = null;
 		for(int i = 0; i < TableConf.size(); i++){
 		    a = (List) TableConf.get(i);
 //		    TableList.add(a);
@@ -1272,9 +1274,17 @@ public abstract class Base {
 //                  System.out.println(a.get(2).toString().substring(0, a.get(2).toString().indexOf("(")));
                  
 //                  System.out.println(a.get(0).toString());
+//			      System.out.println(a.get(3).toString().trim().equals("PI")+ a.get(3).toString().trim());
+			      if (a.get(3).toString().trim().equals("PI") || a.get(1).toString().trim().equals("ROW_ID")){
+			    	  ColType = FieldKeyType.PRIMARY_KEY;
+			    	  NullEable = true;
+			      }else{
+			    	  ColType = FieldKeyType.NOT_A_KEY;
+			    	  NullEable = false;
+			      }
 				  Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
 						  org.tools.DataTypeTrans.Trans(a.get(2), DbType), len, precision,
-				  FieldKeyType.NOT_A_KEY, FieldType.SOURCE, false);
+						  ColType, FieldType.SOURCE, NullEable);
 				  
 //				  Field OWNER=new Field("OWNER","OWNER","",NativeDataTypes.Oracle.VARCHAR2,"30","0",FieldKeyType.NOT_A_KEY,FieldType.SOURCE,false);
 				  
