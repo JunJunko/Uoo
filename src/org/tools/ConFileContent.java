@@ -40,7 +40,7 @@ public class ConFileContent {
 	public static String writeLog(String str) {
 		try {
 			String path = "xml\\M_" + org.tools.GetProperties.getKeyValue("System") + "_"
-					+ org.tools.GetProperties.getKeyValue("TableNm") + ".xml";
+					+ org.tools.GetProperties.getKeyValue("TableNm").toUpperCase() + ".xml";
 			File file = new File(path);
 			if (!file.exists())
 				file.createNewFile();
@@ -115,7 +115,9 @@ public class ConFileContent {
 		return Data.toString().replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>")
 				.replace("BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"timestamp\" KEYTYPE=\"NOT A KEY\" PRECISION=\"19\"", "BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"date\" KEYTYPE=\"NOT A KEY\" PRECISION=\"10\"")
 //				.replace("\"Update else Insert\" VALUE=\"NO", "\"Update else Insert\" VALUE=\"YES")
-				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"");
+				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"")
+				.replace("NAME=\"Sorter Cache Size\" VALUE=\"8388608\"", "NAME=\"Sorter Cache Size\" VALUE=\"auto\"")
+				.replace("Expression DMO Tx\" REUSABLE=\"NO\"", "Expression DMO Tx\" REUSABLE=\"YES\"");
 
 	}
 

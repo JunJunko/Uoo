@@ -51,7 +51,7 @@ public class Joiner extends Base {
 	protected void createSources() {
 		ordersSource = this.CreateCrm("O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "TD");
 		folder.addSource(ordersSource);
-		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "Oracle");
+		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("TDFolder"), "Oracle");
 		folder.addSource(orderDetailsSource);
 	}
 	
@@ -89,6 +89,7 @@ public class Joiner extends Base {
 		
 		
 		//将SQ进来的数据进行排序
+
 		RowSet TagSort = helper.sorter( TagSQ, new String[] {"ROW_ID"},
                 new boolean[] { false }, "SRT_"+org.tools.GetProperties.getKeyValue("TableNm") ).getRowSets().get( 0 );
 

@@ -39,12 +39,27 @@ public class DataTypeTrans {
 	        case "VARCHAR": sb = NativeDataTypes.Teradata.VARCHAR; break;
 	        default: sb = NativeDataTypes.Teradata.VARCHAR; break; 
 	        };
+		}else if(DbType == "Mysql"){
+			switch(DataType.toString().substring(0, DataType.toString().indexOf("(")))
+	        {
+	        case "BIGINT": sb = NativeDataTypes.ODBC.BIGINT; break;
+	        case "INT": sb = NativeDataTypes.ODBC.INTEGER; break;
+	        case "SMALLINT": sb = NativeDataTypes.ODBC.SMALLINT; break;
+	        case "DATETIME": sb = NativeDataTypes.ODBC.TIME; break;
+	        case "TIMESTAMP": sb = NativeDataTypes.ODBC.TIMESTAMP; break;
+	        case "CHAR": sb = NativeDataTypes.ODBC.CHAR; break;
+	        case "DATE": sb = NativeDataTypes.ODBC.DATE; break;
+	        case "DECIMAL": sb = NativeDataTypes.ODBC.DECIMAL; break;
+	        case "VARCHAR": sb = NativeDataTypes.ODBC.VARCHAR; break;
+	        };
+			
 		}
 		return sb;
 	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		System.out.println("Mysql".toUpperCase());
 
 	}
 

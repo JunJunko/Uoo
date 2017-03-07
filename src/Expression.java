@@ -59,7 +59,7 @@ public class Expression extends Base {
      */
     protected void createSources() {
 //        employeeSrc = this.createEmployeeSource();
-    	employeeSrc = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "Oracle");
+    	employeeSrc = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"),  org.tools.GetProperties.getKeyValue("DBType"));
 //    	employeeSrc = this.createMysqlSource(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"));
         folder.addSource( employeeSrc );
     }
@@ -69,12 +69,12 @@ public class Expression extends Base {
      */
     protected void createTargets() {
     	TdTarget =  this.createRelationalTarget( SourceTargetType.Teradata,
-                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm") );
+                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase() );
     }
 
     public void createMappings() throws Exception {
         // create a mapping
-        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("TableNm"), "mapping", "Testing Expression sample" );
+        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "mapping", "Testing Expression sample" );
         setMapFileName( mapping );
         TransformHelper helper = new TransformHelper( mapping );
         // creating DSQ Transformation
@@ -136,7 +136,7 @@ public class Expression extends Base {
     
     protected void createSession() throws Exception {
 		// TODO Auto-generated method stub
-	session = new Session("s_"+org.tools.GetProperties.getKeyValue("TableNm"), "s_"+org.tools.GetProperties.getKeyValue("TableNm"),
+	session = new Session("S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(),
 		"This is session for Expression DMO Tx");
 	session.setMapping(this.mapping);
 	
@@ -158,7 +158,7 @@ public class Expression extends Base {
 	
 	//Overriding source connection in Seesion level
 	ConnectionInfo newSrcCon = new ConnectionInfo(SourceTargetType.Oracle);
-	newSrcCon.setConnectionVariable("$DBConnection_CRM");
+	newSrcCon.setConnectionVariable(org.tools.GetProperties.getKeyValue("Connection"));
 //	ConnectionProperties newSrcConprops = newSrcCon.getConnProps();
 //	newSrcConprops.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "$DBConnection_CRM");
 //	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
@@ -192,7 +192,7 @@ public class Expression extends Base {
      * @see com.informatica.powercenter.sdk.mapfwk.samples.Base#createWorkflow()
      */
     protected void createWorkflow() throws Exception {
-        workflow = new Workflow( "WF_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), "WF_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"),
+        workflow = new Workflow( "WF_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "WF_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(),
                 "This workflow for expression" );
 //        workflow.setParentFolder(folder);
 //        List<String> listOfParams = workflow.getListOfParameters();

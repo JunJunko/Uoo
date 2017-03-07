@@ -95,8 +95,8 @@ public abstract class Base {
 	 * Creates a folder
 	 */
 	protected void createFolder() {
-		folder = new Folder("CRM_INCREMENT", "CRM_INCREMENT",
-				"This is a folder containing java mapping samples");
+		folder = new Folder("WECHAT", "WECHAT",
+				org.tools.GetProperties.getKeyValue("System"));
 		rep.addFolder(folder);
 		
 	}
@@ -1111,7 +1111,7 @@ public abstract class Base {
 		System.out.println("Mapping generated in " + mapFileName);
 //		String XmlData = org.tools.ConFileContent.readToString("M_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml").replace("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"\"/>", "<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 //        System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\" VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
-		org.tools.ConFileContent.writeLog(org.tools.ConFileContent.ReplaceColumnNm("M_"+org.tools.GetProperties.getKeyValue("TableNm")+".xml"));
+		org.tools.ConFileContent.writeLog(org.tools.ConFileContent.ReplaceColumnNm("M_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase()+".xml"));
 	}
 
 	protected void setMapFileName(Mapping mapping) {
@@ -1275,15 +1275,16 @@ public abstract class Base {
                  
 //                  System.out.println(a.get(0).toString());
 //			      System.out.println(a.get(3).toString().trim().equals("PI")+ a.get(3).toString().trim());
-			      if (a.get(3).toString().trim().equals("PI") || a.get(1).toString().trim().equals("ROW_ID")){
+			      if (a.get(3).toString().trim().equals("PI") || a.get(1).toString().trim().equals(org.tools.GetProperties.getKeyValue("IDColunmNM"))){
 			    	  ColType = FieldKeyType.PRIMARY_KEY;
 			    	  NullEable = true;
 			      }else{
 			    	  ColType = FieldKeyType.NOT_A_KEY;
 			    	  NullEable = false;
 			      }
+//			      System.out.println(a.get(0)+a.get(1)+a.get(2)+org.tools.DataTypeTrans.Trans(a.get(2), "Mysql")+a.get(3)+len+ precision);
 				  Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						  org.tools.DataTypeTrans.Trans(a.get(2), DbType), len, precision,
+						  org.tools.DataTypeTrans.Trans(a.get(2), "Mysql"), len, precision,
 						  ColType, FieldType.SOURCE, NullEable);
 				  
 //				  Field OWNER=new Field("OWNER","OWNER","",NativeDataTypes.Oracle.VARCHAR2,"30","0",FieldKeyType.NOT_A_KEY,FieldType.SOURCE,false);
@@ -1291,6 +1292,7 @@ public abstract class Base {
 
 				  fields.add(field);
 				  TableName = TableNm;
+//				  System.out.println(DbType);
 			}
 		}
 		
@@ -1302,8 +1304,11 @@ public abstract class Base {
 		}else if (DbType == "TD"){
 			info = getRelationalConnInfo(SourceTargetType.Teradata,
 					dbName);
+		}else {
+			info = getRelationalConnInfo(SourceTargetType.ODBC,
+					dbName);
 		}
-		tabSource = new Source(TableName, TableName, "This is oracle table", TableName,
+		tabSource = new Source(TableName, TableName, "table", TableName,
 				info);
 //		System.out.println(a.get(0).toString());
 		tabSource.setFields(fields);
