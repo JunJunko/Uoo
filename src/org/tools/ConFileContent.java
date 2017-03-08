@@ -117,7 +117,8 @@ public class ConFileContent {
 //				.replace("\"Update else Insert\" VALUE=\"NO", "\"Update else Insert\" VALUE=\"YES")
 				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"")
 				.replace("NAME=\"Sorter Cache Size\" VALUE=\"8388608\"", "NAME=\"Sorter Cache Size\" VALUE=\"auto\"")
-				.replace("Expression DMO Tx\" REUSABLE=\"NO\"", "Expression DMO Tx\" REUSABLE=\"YES\"");
+//				.replace("Expression DMO Tx\" REUSABLE=\"NO\"", "Expression DMO Tx\" REUSABLE=\"YES\"")
+				;
 
 	}
 

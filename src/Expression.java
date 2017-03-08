@@ -141,6 +141,7 @@ public class Expression extends Base {
 	session.setMapping(this.mapping);
 	
 	//Adding Connection Objects for substitution mask option
+	session.setTaskInstanceProperty("REUSABLE", "YES");
 	ConnectionInfo info = new ConnectionInfo(SourceTargetType.Oracle);
 	ConnectionProperties cprops = info.getConnProps();
 	cprops.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "Oracle");
@@ -164,6 +165,7 @@ public class Expression extends Base {
 //	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
 	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
 	session.addConnectionInfoObject(dsq, newSrcCon);
+    
 	//session.addConnectionInfoObject(jobSourceObj, newSrcCon);
 	
 	//Overriding target connection in Seesion level

@@ -53,6 +53,20 @@ public class DataTypeTrans {
 	        case "VARCHAR": sb = NativeDataTypes.ODBC.VARCHAR; break;
 	        };
 			
+		}else if(DbType == "MSSQL"){
+			switch(DataType.toString().substring(0, DataType.toString().indexOf("(")))
+	        {
+	        case "BIGINT": sb = NativeDataTypes.SqlServer.BIGINT; break;
+	        case "INT": sb = NativeDataTypes.SqlServer.INT; break;
+	        case "SMALLINT": sb = NativeDataTypes.SqlServer.SMALLINT; break;
+	        case "DATETIME": sb = NativeDataTypes.SqlServer.DATETIME; break;
+	        case "TIMESTAMP": sb = NativeDataTypes.SqlServer.TIMESTAMP; break;
+	        case "CHAR": sb = NativeDataTypes.SqlServer.CHAR; break;
+	        case "DATE": sb = NativeDataTypes.SqlServer.DATETIME; break;
+	        case "DECIMAL": sb = NativeDataTypes.SqlServer.DECIMAL; break;
+	        case "VARCHAR": sb = NativeDataTypes.SqlServer.VARCHAR; break;
+	        };
+			
 		}
 		return sb;
 	}
