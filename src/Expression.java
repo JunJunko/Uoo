@@ -115,6 +115,7 @@ public class Expression extends Base {
             if (args.length > 0) {
                 if (expressionTrans.validateRunMode( args[0] )) {
                 	ArrayList<String> a = GetTableList();
+                	org.tools.DelXmlFolder.delAllFile("D:\\workspace\\Uoo\\xml\\");
                 	for(int i = 0; i < a.size(); i++){
                 		
                 		org.tools.GetProperties.writeProperties("TableNm", a.get(i));
