@@ -136,6 +136,8 @@ public class ConFileContent {
 							System.out.println(ReplaceStr);
 							Data.append(line.replaceAll(" TOFIELD=\".*?\"", " TOFIELD=\"" + ReplaceStr + "_OG" + "\""));
 							Data.append("\n");
+						}else{
+							Data.append(line + "\n");
 						}
 					}
 

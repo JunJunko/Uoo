@@ -1283,7 +1283,7 @@ public abstract class Base {
 			      }
 //			      System.out.println(a.get(0)+a.get(1)+a.get(2)+org.tools.DataTypeTrans.Trans(a.get(2), "Mysql")+a.get(3)+len+ precision);
 				  Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						  org.tools.DataTypeTrans.Trans(a.get(2), "MSSQL"), len, precision,
+						  org.tools.DataTypeTrans.Trans(a.get(2), "Mysql"), len, precision,
 						  ColType, FieldType.SOURCE, NullEable);
 				  
 //				  Field OWNER=new Field("OWNER","OWNER","",NativeDataTypes.Oracle.VARCHAR2,"30","0",FieldKeyType.NOT_A_KEY,FieldType.SOURCE,false);
@@ -1304,7 +1304,7 @@ public abstract class Base {
 			info = getRelationalConnInfo(SourceTargetType.Teradata,
 					dbName);
 		}else {
-			info = getRelationalConnInfo(SourceTargetType.Microsoft_SQL_Server,
+			info = getRelationalConnInfo(SourceTargetType.ODBC,
 					dbName);
 		}
 		tabSource = new Source(TableName, TableName, "table", TableName,
