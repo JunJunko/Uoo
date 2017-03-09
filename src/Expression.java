@@ -31,6 +31,7 @@ import com.informatica.powercenter.sdk.mapfwk.core.Session;
 import com.informatica.powercenter.sdk.mapfwk.core.SessionPropsConstants;
 import com.informatica.powercenter.sdk.mapfwk.core.Source;
 import com.informatica.powercenter.sdk.mapfwk.core.Target;
+import com.informatica.powercenter.sdk.mapfwk.core.TaskProperties;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformField;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformHelper;
 import com.informatica.powercenter.sdk.mapfwk.core.Workflow;
@@ -131,9 +132,24 @@ public class Expression extends Base {
     	
     	System.out.println(GetTableList());
     }
-
-
     
+    
+private void setSourceTargetProperties() {
+		
+		// get the DSQ Transformation (if Source name is "JOBS", then corresponding SQ name is
+		// "SQ_JOBS")
+		DSQTransformation dsq = (DSQTransformation)this.mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
+		
+		// set the Source Qualifier properties
+		
+		// set Source properties
+		this.employeeSrc.setSessionTransformInstanceProperty("Owner Name", org.tools.GetProperties.getKeyValue("Owner"));
+		
+
+	}
+
+
+
     protected void createSession() throws Exception {
 		// TODO Auto-generated method stub
 	session = new Session("S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(),
@@ -142,6 +158,7 @@ public class Expression extends Base {
 	
 	//Adding Connection Objects for substitution mask option
 	session.setTaskInstanceProperty("REUSABLE", "YES");
+	session.setTaskInstanceProperty("Owner Name", "dlpm2");
 	ConnectionInfo info = new ConnectionInfo(SourceTargetType.Oracle);
 	ConnectionProperties cprops = info.getConnProps();
 	cprops.setProperty(ConnectionPropsConstants.CONNECTIONNAME, "Oracle");
@@ -173,7 +190,10 @@ public class Expression extends Base {
 
 	ConnectionProperties newTgtConprops = newTgtCon.getConnProps();
 	
+	TaskProperties SP = session.getProperties();
+	
 	newTgtConprops.setProperty(ConnectionPropsConstants.TRUNCATE_TABLE, "YES");
+	SP.setProperty(SessionPropsConstants.CFG_OVERRIDE_TRACING, "terse");
 	
 	newTgtConprops.setProperty(SessionPropsConstants.PARAMETER_FILENAME, "$PMRootDir/EDWParam/edw.param");
 	
@@ -185,8 +205,10 @@ public class Expression extends Base {
 	session.addConnectionInfoObject(TdTarget, newTgtCon);
 	//Setting session level property.
 //	session.addSessionTransformInstanceProperties(dmo, props);
-
+	setSourceTargetProperties();
 	}
+    
+
 
     /*
      * (non-Javadoc)
