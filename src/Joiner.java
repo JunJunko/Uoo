@@ -22,8 +22,10 @@ import com.informatica.powercenter.sdk.mapfwk.core.MappingVariable;
 import com.informatica.powercenter.sdk.mapfwk.core.MappingVariableDataTypes;
 import com.informatica.powercenter.sdk.mapfwk.core.RowSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Session;
+import com.informatica.powercenter.sdk.mapfwk.core.SessionPropsConstants;
 import com.informatica.powercenter.sdk.mapfwk.core.Source;
 import com.informatica.powercenter.sdk.mapfwk.core.Target;
+import com.informatica.powercenter.sdk.mapfwk.core.TaskProperties;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformField;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformHelper;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformationProperties;
@@ -43,15 +45,16 @@ public class Joiner extends Base {
 	protected Source orderDetailsSource;
 	
 	protected static ArrayList<ArrayList<String>> TableConf = ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
+	
 //	protected String System = org.tools.GetProperties.getKeyValue("System");
 
 	/**
 	 * Create sources
 	 */
 	protected void createSources() {
-		ordersSource = this.CreateCrm("O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "TD");
+		ordersSource = this.CreateCrm("O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("TDFolder"), "TD");
 		folder.addSource(ordersSource);
-		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("TDFolder"), "Oracle");
+		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "MSSQL");
 		folder.addSource(orderDetailsSource);
 	}
 	
@@ -66,7 +69,7 @@ public class Joiner extends Base {
 	}
 
 	protected void createMappings() throws Exception {
-        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("TableNm"), "mapping", "Testing upsert sample" );
+        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "mapping", "Testing upsert sample" );
 
 		setMapFileName(mapping);
 		TransformHelper helper = new TransformHelper(mapping);
@@ -89,12 +92,13 @@ public class Joiner extends Base {
 		
 		
 		//将SQ进来的数据进行排序
+		String IDColunmNM = org.tools.GetProperties.getKeyValue("IDColunmNM");
 
-		RowSet TagSort = helper.sorter( TagSQ, new String[] {"ROW_ID"},
+		RowSet TagSort = helper.sorter( TagSQ, new String[] {IDColunmNM},
                 new boolean[] { false }, "SRT_"+org.tools.GetProperties.getKeyValue("TableNm") ).getRowSets().get( 0 );
 
 		
-		RowSet SouSort = helper.sorter( SouSQ, new String[] {"ROW_ID"},
+		RowSet SouSort = helper.sorter( SouSQ, new String[] {IDColunmNM},
                 new boolean[] { false }, "SRT_"+"O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm") ).getRowSets().get( 0 );
 
 		InputSet SouInputSet = new InputSet(SouSort);
@@ -110,7 +114,7 @@ public class Joiner extends Base {
         JoinProperty.setProperty("Joiner Index Cache Size", "auto");
         //将SQ连到Join组件
 		RowSet joinRowSet = (RowSet) helper.join(inputSets,
-				new InputSet(TagSort), "ROW_ID = IN_ROW_ID",JoinProperty,
+				new InputSet(TagSort), "ID = IN_ID",JoinProperty,
 				"JNR_"+org.tools.GetProperties.getKeyValue("TableNm")).getRowSets().get(0);
 
 		
@@ -138,6 +142,8 @@ public class Joiner extends Base {
                 case "VARCHAR2": sb = a.get(2).replace("VARCHAR2", "String").replace(")", ",0)"); break;
                 case "NUMBER": sb = a.get(2).replace("NUMBER", "decimal").replace(")", ",0)"); break;
                 case "DATE": sb = "date/time(29,9)"; break;
+                case "DATETIME": sb = "date/time(29,9)"; break;
+                case "TIME": sb = "date/time(29,9)"; break;
                 case "BLOB": sb = a.get(2).replace("BLOB", "binary").replace(")", ",0)"); break;
                 case "CHAR": sb = a.get(2).replace("CHAR", "String").replace(")", ",0)"); break;
                 case "CLOB": sb = a.get(2).replace("CLOB", "binary").replace(")", ",0)"); break;
@@ -167,7 +173,7 @@ public class Joiner extends Base {
         }
 //        String[] toBeStored = Column.toArray(new String[Column.size()]);   
 
-        String exp1 = "integer(1, 0) DW_OPER_FLAG = decode(true,isnull(ROW_ID), 0, ROW_ID = IN_ROW_ID AND LAST_UPD = IN_LAST_UPD,2, 1)";
+        String exp1 = "integer(1, 0) DW_OPER_FLAG = decode(true,isnull(ID), 0, ID = IN_ID AND LAST_UPDATED_TIME = IN_LAST_UPDATED_TIME,2, 1)";
         String exp2 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
         String exp3 = "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
         TransformField outField1 = new TransformField( exp1 );
@@ -233,7 +239,7 @@ public class Joiner extends Base {
 	 */
 	protected void createWorkflow() throws Exception {
 
-		workflow = new Workflow("WF_"+org.tools.GetProperties.getKeyValue("TableNm"), "WF_"+org.tools.GetProperties.getKeyValue("TableNm"),
+		workflow = new Workflow("WF_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "WF_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(),
 				"This workflow for joiner");
 		workflow.addSession(session);
         workflow.assignIntegrationService(org.tools.GetProperties.getKeyValue("Integration"), org.tools.GetProperties.getKeyValue("Domain"));
@@ -247,6 +253,7 @@ public class Joiner extends Base {
 			if (args.length > 0) {
 				if (joinerTrans.validateRunMode(args[0])) {
 					ArrayList<String> a = GetTableList();
+					org.tools.DelXmlFolder.delAllFile("D:\\workspace\\Uoo\\xml\\");
                 	for(int i = 0; i < a.size(); i++){
                 		org.tools.GetProperties.writeProperties("TableNm", a.get(i));
 					    joinerTrans.execute();
@@ -276,7 +283,19 @@ public class Joiner extends Base {
 	        return TL;
 	    }
 
-		
+	  private void setSourceTargetProperties() {
+			
+			// get the DSQ Transformation (if Source name is "JOBS", then corresponding SQ name is
+			// "SQ_JOBS")
+//			DSQTransformation dsq = (DSQTransformation)this.mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
+			
+			// set the Source Qualifier properties
+			
+			// set Source properties
+			this.orderDetailsSource.setSessionTransformInstanceProperty("Owner Name", org.tools.GetProperties.getKeyValue("Owner"));
+			
+
+		}	
 	 
 
 	/*
@@ -286,7 +305,7 @@ public class Joiner extends Base {
 	 */
 	protected void createSession() throws Exception {
 		// TODO Auto-generated method stub
-	session = new Session("S_"+org.tools.GetProperties.getKeyValue("TableNm"), "S_"+org.tools.GetProperties.getKeyValue("TableNm"),
+	session = new Session("S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(),
 		"This is session for Expression DMO Tx");
 	session.setMapping(this.mapping);
 	
@@ -328,7 +347,8 @@ public class Joiner extends Base {
 	
 	newTgtConprops.setProperty("Parameter Filename", "$PMRootDir/EDWParam/edw.param");
 	
-	
+	TaskProperties SP = session.getProperties();
+	SP.setProperty(SessionPropsConstants.CFG_OVERRIDE_TRACING, "terse");
 	newTgtCon.setConnectionVariable("$DBConnection_TD_U");
 //	ConnectionProperties newTgtConprops = newTgtCon.getConnProps();
 //	newTgtConprops.setProperty( ConnectionPropsConstants.CONNECTIONNAME, "$DBConnection_TD");
@@ -337,6 +357,6 @@ public class Joiner extends Base {
 	session.addConnectionInfoObject(outputTarget, newTgtCon);
 	//Setting session level property.
 //	session.addSessionTransformInstanceProperties(dmo, props);
-
+	setSourceTargetProperties();
 	}
 }

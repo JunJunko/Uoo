@@ -192,9 +192,9 @@ private void setSourceTargetProperties() {
 	ConnectionProperties newTgtConprops = newTgtCon.getConnProps();
 	
 	TaskProperties SP = session.getProperties();
-	
-	newTgtConprops.setProperty(ConnectionPropsConstants.TRUNCATE_TABLE, "YES");
 	SP.setProperty(SessionPropsConstants.CFG_OVERRIDE_TRACING, "terse");
+	newTgtConprops.setProperty(ConnectionPropsConstants.TRUNCATE_TABLE, "YES");
+	
 	
 	newTgtConprops.setProperty(SessionPropsConstants.PARAMETER_FILENAME, "$PMRootDir/EDWParam/edw.param");
 	

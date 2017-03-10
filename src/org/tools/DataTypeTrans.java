@@ -51,6 +51,7 @@ public class DataTypeTrans {
 	        case "DATE": sb = NativeDataTypes.ODBC.DATE; break;
 	        case "DECIMAL": sb = NativeDataTypes.ODBC.DECIMAL; break;
 	        case "VARCHAR": sb = NativeDataTypes.ODBC.VARCHAR; break;
+	        default: sb = NativeDataTypes.Teradata.VARCHAR; break; 
 	        };
 			
 		}else if(DbType == "MSSQL"){
@@ -59,12 +60,13 @@ public class DataTypeTrans {
 	        case "BIGINT": sb = NativeDataTypes.SqlServer.BIGINT; break;
 	        case "INT": sb = NativeDataTypes.SqlServer.INT; break;
 	        case "SMALLINT": sb = NativeDataTypes.SqlServer.SMALLINT; break;
-	        case "DATETIME": sb = NativeDataTypes.SqlServer.DATETIME; break;
-	        case "TIMESTAMP": sb = NativeDataTypes.SqlServer.TIMESTAMP; break;
+//	        case "DATETIME": sb = NativeDataTypes.SqlServer.DATETIME; break;
+//	        case "TIMESTAMP": sb = NativeDataTypes.SqlServer.TIMESTAMP; break;
 	        case "CHAR": sb = NativeDataTypes.SqlServer.CHAR; break;
-	        case "DATE": sb = NativeDataTypes.SqlServer.DATETIME; break;
+//	        case "DATE": sb = NativeDataTypes.SqlServer.TIMESTAMP; break;
 	        case "DECIMAL": sb = NativeDataTypes.SqlServer.DECIMAL; break;
 	        case "VARCHAR": sb = NativeDataTypes.SqlServer.VARCHAR; break;
+	        default: sb = NativeDataTypes.Teradata.VARCHAR; break; 
 	        };
 			
 		}

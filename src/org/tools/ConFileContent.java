@@ -85,15 +85,15 @@ public class ConFileContent {
 
 					if (m.find()) {
 						String ReplaceStr = m.group(1);
-						// System.out.println(ReplaceStr);
+						 System.out.println(ReplaceStr);
 
 						if (org.tools.RePlaceOG.OG().contains(ReplaceStr)) {
-							// System.out.println(ReplaceStr + "_OG");
-							Data.append(line.replaceAll(" NAME=\".*?\"", " NAME=\"" + ReplaceStr + "_OG" + "\""));
+							 System.out.println(ReplaceStr + "_OG");
+							Data.append(line.replaceAll(" NAME=\".*?\"", " NAME=\"" + ReplaceStr.replace("_out", "") + "_OG" + "\""));
 							Data.append("\n");
 						} else {
-							// System.out.println(ReplaceStr);
-							Data.append(line.replaceAll(" NAME=\".*?_out\"", " NAME=\"" + ReplaceStr + "\""));
+//							 System.out.println(ReplaceStr);
+							Data.append(line.replaceAll(" NAME=\".*?_out\"", " NAME=\"" + ReplaceStr.replace("_out", "") + "\""));
 							Data.append("\n");
 						}
 						// }
@@ -133,7 +133,7 @@ public class ConFileContent {
 						String ReplaceStr = m.group(1);
 
 						if (org.tools.RePlaceOG.OG().contains(ReplaceStr)) {
-							System.out.println(ReplaceStr);
+							System.out.println(ReplaceStr+"1q111");
 							Data.append(line.replaceAll(" TOFIELD=\".*?\"", " TOFIELD=\"" + ReplaceStr + "_OG" + "\""));
 							Data.append("\n");
 						}else{
