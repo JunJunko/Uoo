@@ -37,6 +37,10 @@ public class DataTypeTrans {
 	        case "NCHAR": sb = NativeDataTypes.Teradata.CHAR; break;
 	        case "TIMESTAMP": sb = NativeDataTypes.Teradata.TIMESTAMP; break;
 	        case "VARCHAR": sb = NativeDataTypes.Teradata.VARCHAR; break;
+	        case "BIGINT": sb = NativeDataTypes.Teradata.BIGINT; break;
+	        case "DECIMAL": sb = NativeDataTypes.Teradata.DECIMAL; break;
+	        case "DATETIME": sb = NativeDataTypes.Teradata.TIMESTAMP; break;
+	        case "INT": sb = NativeDataTypes.Teradata.INTEGER; break;
 	        default: sb = NativeDataTypes.Teradata.VARCHAR; break; 
 	        };
 		}else if(DbType == "Mysql"){
@@ -55,17 +59,19 @@ public class DataTypeTrans {
 	        };
 			
 		}else if(DbType == "MSSQL"){
-			switch(DataType.toString().substring(0, DataType.toString().indexOf("(")))
+//			System.out.println(DataType.toString()+"++++++++++++++++");
+			switch(DataType.toString().substring(0, DataType.toString().indexOf("(")).toUpperCase())
 	        {
 	        case "BIGINT": sb = NativeDataTypes.SqlServer.BIGINT; break;
 	        case "INT": sb = NativeDataTypes.SqlServer.INT; break;
 	        case "SMALLINT": sb = NativeDataTypes.SqlServer.SMALLINT; break;
-//	        case "DATETIME": sb = NativeDataTypes.SqlServer.DATETIME; break;
-//	        case "TIMESTAMP": sb = NativeDataTypes.SqlServer.TIMESTAMP; break;
+	        case "DATETIME": sb = NativeDataTypes.SqlServer.DATETIME; break;
+	        case "TIMESTAMP": sb = NativeDataTypes.SqlServer.TIMESTAMP; break;
 	        case "CHAR": sb = NativeDataTypes.SqlServer.CHAR; break;
-//	        case "DATE": sb = NativeDataTypes.SqlServer.TIMESTAMP; break;
+	        case "DATE": sb = NativeDataTypes.SqlServer.TIMESTAMP; break;
 	        case "DECIMAL": sb = NativeDataTypes.SqlServer.DECIMAL; break;
 	        case "VARCHAR": sb = NativeDataTypes.SqlServer.VARCHAR; break;
+	        case "NTEXT": sb = NativeDataTypes.SqlServer.NTEXT; break;
 	        default: sb = NativeDataTypes.Teradata.VARCHAR; break; 
 	        };
 			
@@ -75,7 +81,7 @@ public class DataTypeTrans {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		System.out.println("Mysql".toUpperCase());
+//		System.out.println("Mysql".toUpperCase());
 
 	}
 

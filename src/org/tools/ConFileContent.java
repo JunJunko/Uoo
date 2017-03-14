@@ -71,6 +71,8 @@ public class ConFileContent {
 			String Conregex = "TOFIELD=\"(.*?)_out\"";
 			String TransType = ".*FROMINSTANCE=\"UPD_.*";
 			String ExpType = ".*FROMINSTANCETYPE=\"Expression\".*";
+
+			
 			while ((line = bufReader.readLine()) != null) {
 
 				if (line.matches(TagReg) && line.matches(Tagregex)) {
@@ -85,10 +87,10 @@ public class ConFileContent {
 
 					if (m.find()) {
 						String ReplaceStr = m.group(1);
-						 System.out.println(ReplaceStr);
-
-						if (org.tools.RePlaceOG.OG().contains(ReplaceStr)) {
-							 System.out.println(ReplaceStr + "_OG");
+//						 System.out.println(ReplaceStr);
+						System.out.println(ReplaceStr);
+						if (org.tools.RePlaceOG.OG().contains(ReplaceStr.replace("_out", ""))) {
+							 
 							Data.append(line.replaceAll(" NAME=\".*?\"", " NAME=\"" + ReplaceStr.replace("_out", "") + "_OG" + "\""));
 							Data.append("\n");
 						} else {
@@ -133,7 +135,6 @@ public class ConFileContent {
 						String ReplaceStr = m.group(1);
 
 						if (org.tools.RePlaceOG.OG().contains(ReplaceStr)) {
-							System.out.println(ReplaceStr+"1q111");
 							Data.append(line.replaceAll(" TOFIELD=\".*?\"", " TOFIELD=\"" + ReplaceStr + "_OG" + "\""));
 							Data.append("\n");
 						}else{
@@ -141,7 +142,7 @@ public class ConFileContent {
 						}
 					}
 
-				} else {
+				}else {
 					Data.append(line + "\n");
 				}
 			}

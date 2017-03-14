@@ -43,11 +43,11 @@ public class ExcelUtil {
     
    
 
-	public static  ArrayList readXml(String fileName){  
+	public static  ArrayList<ArrayList<String>> readXml(String fileName){  
         boolean isE2007 = false;    //判断是否是excel2007格式  
-        List TableList = new ArrayList();
-        List ColumnList = new ArrayList();
-        List TypeList = new ArrayList();
+        List<String> TableList = new ArrayList<String>();
+        List<String> ColumnList = new ArrayList<String>();
+        List<String> TypeList = new ArrayList<String>();
         ArrayList HashList = new ArrayList();
         ArrayList ReList = new ArrayList();
         if(fileName.endsWith("xlsx"))  
@@ -99,7 +99,7 @@ public class ExcelUtil {
              
              row = sheet.getRow(i);          //取得第i行  
              cell_c = row.getCell(3);        //取得i行的第一列  
-             cellValue3 = cell_c.getStringCellValue().trim();
+             cellValue3 = cell_c.getStringCellValue().trim().toUpperCase();
              TypeList.add(cellValue3);
              
              row = sheet.getRow(i);          //取得第i行  

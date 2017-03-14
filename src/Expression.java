@@ -50,7 +50,7 @@ public class Expression extends Base {
     // /////////////////////////////////////////////////////////////////////////////////////
     protected Source employeeSrc;
     protected Target TdTarget;
-	protected static ArrayList<List<String>> TableConf = ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
+	protected static ArrayList<ArrayList<String>> TableConf = ExcelUtil.readXml(org.tools.GetProperties.getKeyValue("ExcelPath"));
 
 
 	

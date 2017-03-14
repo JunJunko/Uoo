@@ -1128,13 +1128,13 @@ public abstract class Base {
 				Matcher m = r.matcher(a.get(2).toString());
 				if (m.find()) {
 					String[] sourceStrArray = m.group(1).toString().split(",");
-					System.out.print(sourceStrArray.length);
-					if (sourceStrArray.length == 2) {
-						len = sourceStrArray[0];
-						precision = sourceStrArray[1];
-					} else if (org.tools.DataTypeTrans.Trans(a.get(2), DbType) == "timestamp") {
+//					System.out.print(sourceStrArray.length);
+					if (org.tools.DataTypeTrans.Trans(a.get(2), DbType) == "timestamp") {
 						len = "26";
 						precision = "6";
+					}else if (sourceStrArray.length == 2) {
+						len = sourceStrArray[0];
+						precision = sourceStrArray[1];
 					} else {
 						len = sourceStrArray[0];
 						precision = "0";
@@ -1154,10 +1154,10 @@ public abstract class Base {
 					ColType = FieldKeyType.NOT_A_KEY;
 					NullEable = false;
 				}
-				 System.out.println(a.get(0)+a.get(1)+a.get(2)+org.tools.DataTypeTrans.Trans(a.get(2),
-				 "Mysql")+a.get(3)+len+ precision);
+//				 System.out.println(a.get(1).toString()+","+org.tools.DataTypeTrans.Trans(a.get(2),
+//						 "Mysql")+""+len+","+ precision);
 				Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						org.tools.DataTypeTrans.Trans(a.get(2), "Mysql"), len, precision, ColType, FieldType.SOURCE,
+						org.tools.DataTypeTrans.Trans(a.get(2), DbType), len, precision, ColType, FieldType.SOURCE,
 						NullEable);
 
 				// Field OWNER=new
@@ -1176,7 +1176,7 @@ public abstract class Base {
 		} else if (DbType == "TD") {
 			info = getRelationalConnInfo(SourceTargetType.Teradata, dbName);
 		}else{
-			info = getRelationalConnInfo(SourceTargetType.Microsoft_SQL_Server, dbName);
+			info = getRelationalConnInfo(SourceTargetType.ODBC, dbName);
 		}
 		tabSource = new Source(TableName, TableName, "table", TableName, info);
 		// System.out.println(a.get(0).toString());

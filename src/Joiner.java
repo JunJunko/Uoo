@@ -54,7 +54,7 @@ public class Joiner extends Base {
 	protected void createSources() {
 		ordersSource = this.CreateCrm("O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("TDFolder"), "TD");
 		folder.addSource(ordersSource);
-		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "MSSQL");
+		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"), org.tools.GetProperties.getKeyValue("SourceFolder"), "Mysql");
 		folder.addSource(orderDetailsSource);
 	}
 	
@@ -65,11 +65,11 @@ public class Joiner extends Base {
 	 */
 	protected void createTargets() {
 		outputTarget = this.createRelationalTarget( SourceTargetType.Teradata,
-                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"));
+                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase());
 	}
 
 	protected void createMappings() throws Exception {
-        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "mapping", "Testing upsert sample" );
+        mapping = new Mapping( "M_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "mapping", "" );
 
 		setMapFileName(mapping);
 		TransformHelper helper = new TransformHelper(mapping);
@@ -328,7 +328,7 @@ public class Joiner extends Base {
 	
 	//Overriding source connection in Seesion level
 	ConnectionInfo SrcConOra = new ConnectionInfo(SourceTargetType.Oracle);
-	SrcConOra.setConnectionVariable("$DBConnection_CRM");
+	SrcConOra.setConnectionVariable(org.tools.GetProperties.getKeyValue("Connection"));
 	DSQTransformation dsq = (DSQTransformation)mapping.getTransformation("SQ_"+org.tools.GetProperties.getKeyValue("TableNm"));
 	session.addConnectionInfoObject(dsq, SrcConOra);
 	
@@ -338,7 +338,7 @@ public class Joiner extends Base {
 	DSQTransformation Tdsq = (DSQTransformation)mapping.getTransformation("SQ_"+"O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm"));
 	session.addConnectionInfoObject(Tdsq, SrcConTD);
 	//session.addConnectionInfoObject(jobSourceObj, newSrcCon);
-	
+	session.setTaskInstanceProperty("REUSABLE", "YES");
 	//Overriding target connection in Seesion level
 	ConnectionInfo newTgtCon = new ConnectionInfo(SourceTargetType.Teradata_PT_Connection);
 
