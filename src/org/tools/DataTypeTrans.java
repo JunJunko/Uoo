@@ -41,6 +41,8 @@ public class DataTypeTrans {
 	        case "DECIMAL": sb = NativeDataTypes.Teradata.DECIMAL; break;
 	        case "DATETIME": sb = NativeDataTypes.Teradata.TIMESTAMP; break;
 	        case "INT": sb = NativeDataTypes.Teradata.INTEGER; break;
+	        case "TINYINT": sb = NativeDataTypes.Teradata.SMALLINT; break;
+	        case "BIT": sb = NativeDataTypes.Teradata.INTEGER; break;
 	        default: sb = NativeDataTypes.Teradata.VARCHAR; break; 
 	        };
 		}else if(DbType == "Mysql"){
@@ -72,6 +74,8 @@ public class DataTypeTrans {
 	        case "DECIMAL": sb = NativeDataTypes.SqlServer.DECIMAL; break;
 	        case "VARCHAR": sb = NativeDataTypes.SqlServer.VARCHAR; break;
 	        case "NTEXT": sb = NativeDataTypes.SqlServer.NTEXT; break;
+	        case "TINYINT": sb = NativeDataTypes.SqlServer.TINYINT; break;
+	        case "BIT": sb = NativeDataTypes.SqlServer.BIT; break;
 	        default: sb = NativeDataTypes.Teradata.VARCHAR; break; 
 	        };
 			

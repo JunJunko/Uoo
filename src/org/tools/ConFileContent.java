@@ -58,6 +58,7 @@ public class ConFileContent {
 
 	public static String ReplaceColumnNm(String filename) {
 		StringBuffer Data = new StringBuffer();
+		org.tools.UpdateXml.updateAttributeValue(filename);
 		try {
 			FileInputStream in = new FileInputStream(filename);
 			InputStreamReader inReader = new InputStreamReader(in, "GBK");
@@ -70,7 +71,7 @@ public class ConFileContent {
 			String ConReg = ".*CONNECTOR.*"; // 判断字符串中是否含有CONNECTOR
 			String Conregex = "TOFIELD=\"(.*?)_out\"";
 			String TransType = ".*FROMINSTANCE=\"UPD_.*";
-			String ExpType = ".*FROMINSTANCETYPE=\"Expression\".*";
+			String ExpType = ".*FROMINSTANCETYPE=\"Update Strategy\".*"; 
 
 			
 			while ((line = bufReader.readLine()) != null) {
@@ -120,29 +121,36 @@ public class ConFileContent {
 						// System.out.println(line.replaceAll("TOFIELD=\"(.*?)_out\"",
 						// "TOFIELD=\""+ReplaceStr+"\""));
 						// System.out.println("++++++++++++++++++"+ReplaceStr);
+						if (org.tools.RePlaceOG.OG().contains(ReplaceStr)) {
+							Data.append(line.replaceAll(" TOFIELD=\".*?\"", " TOFIELD=\"" + ReplaceStr + "_OG" + "\""));
+							Data.append("\n");
+						}else{
 						Data.append(line.replaceAll("TOFIELD=\".*?_out\"", "TOFIELD=\"" + ReplaceStr + "\""));
 						Data.append("\n");
+						}
 					} else {
 						Data.append(line + "\n");
 					}
 					// System.out.println("第" + i + "行：" +line);
 
-				} else if (line.matches(ConReg) && line.matches(ExpType)) {
-
-					Pattern pattern = Pattern.compile(" TOFIELD=\"(.*?)\"");
-					Matcher m = pattern.matcher(line);
-					if (m.find()) {
-						String ReplaceStr = m.group(1);
-
-						if (org.tools.RePlaceOG.OG().contains(ReplaceStr)) {
-							Data.append(line.replaceAll(" TOFIELD=\".*?\"", " TOFIELD=\"" + ReplaceStr + "_OG" + "\""));
-							Data.append("\n");
-						}else{
-							Data.append(line + "\n");
-						}
-					}
-
-				}else {
+				} 
+//				else if (line.matches(ConReg) && line.matches(ExpType)) {
+//
+//					Pattern pattern = Pattern.compile(" TOFIELD=\"(.*?)\"");
+//					Matcher m = pattern.matcher(line);
+//					if (m.find()) {
+//						String ReplaceStr = m.group(1);
+//
+//						if (org.tools.RePlaceOG.OG().contains(ReplaceStr)) {
+//							Data.append(line.replaceAll(" TOFIELD=\".*?\"", " TOFIELD=\"" + ReplaceStr + "_OG" + "\""));
+//							Data.append("\n");
+//						}else{
+//							Data.append(line + "\n");
+//						}
+//					}
+//
+//				}
+				else {
 					Data.append(line + "\n");
 				}
 			}
@@ -162,6 +170,7 @@ public class ConFileContent {
 				.replace("\"Update else Insert\" VALUE=\"NO", "\"Update else Insert\" VALUE=\"YES")
 				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"")
 				.replace("NAME=\"Sorter Cache Size\" VALUE=\"8388608\"", "NAME=\"Sorter Cache Size\" VALUE=\"auto\"")
+				.replace("<POWERMART", "<!DOCTYPE POWERMART SYSTEM \"powrmart.dtd\"><POWERMART")
 		// .replace("Expression DMO Tx\" REUSABLE=\"NO\"", "Expression DMO Tx\"
 		// REUSABLE=\"YES\"")
 		;

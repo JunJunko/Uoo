@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 
 public class UpdateXml {
 
-	private static void updateAttributeValue(String filePath) {
+	public static void updateAttributeValue(String filePath) {
 		
 		Element SOURCE = null;
 		Element SOURCEFIELD = null;
@@ -34,6 +34,9 @@ public class UpdateXml {
 			File xmlFile = new File(filePath);
 			doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();
+			
+
+			doc.createElement("stuEle");
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,11 +45,41 @@ public class UpdateXml {
 		
 		
 		NodeList employees = doc.getElementsByTagName("SOURCE");
+		
+		NodeList Connect = doc.getElementsByTagName("CONNECTOR");
+		for (int i = 0; i < Connect.getLength(); i++) {
+
+			Element ConnLab = (Element) Connect.item(i);
+//			Element TOINSTANCE = (Element) ConnLab.getElementsByTagName("TOINSTANCE");
+			String TOINSTANCE = ConnLab.getAttribute("TOINSTANCE");
+//			for(int j = 0; j < TOINSTANCE.getLength(); j++){
+			
+			if(TOINSTANCE.substring(0, 5).equals("SQ_O_")){
+				String TOFIELD = ConnLab.getAttribute("TOFIELD");
+				if(org.tools.RePlaceOG.OG().contains(TOFIELD)){
+					System.out.println(TOFIELD);
+					ConnLab.setAttribute("FROMFIELD", TOFIELD+"_OG");
+					
+				}
+			}
+			
+				
+			
+			
+			
+//			if(ConnLab.getElementsByTagName("TOINSTANCE").toString().substring(0, 3) == "1"){
+//				String TOFIELD = ConnLab.getAttribute("TOFIELD");
+//				System.out.println(TOFIELD);
+//			}
+			
+		}
+		
+		
 
 		// loop for each employee
 		for (int i = 0; i < employees.getLength(); i++) {
 			SOURCE = (Element) employees.item(i);
-
+			
 //			System.out.println(SOURCE.getAttribute("DBDNAME"));
 			String DBDNAME = SOURCE.getAttribute("DBDNAME");
 			if (DBDNAME.equals("ODS")) {
