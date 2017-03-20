@@ -230,6 +230,10 @@ public class ZipperTable extends Base {
 
 			}
 		}
+		
+		String exp = "date/time(29,9) DW_START_DT_out = DW_START_DT";
+		TransformField outField = new TransformField(exp);
+		transFields.add(outField);
 		// String[] toBeStored = Column.toArray(new String[Column.size()]);
 
 //		String exp1 = "date/time(10, 0) DW_END_DT = ADD_TO_DATE ( sysdate, 'DD', -1 )";
@@ -251,7 +255,7 @@ public class ZipperTable extends Base {
 				.getRowSets().get(0);
 
 		String[] strArray = null;
-		Column = Column+",MD5ALL,IN_MD5ALL";
+		Column = Column+",MD5ALL,IN_MD5ALL,DW_START_DT";
 		strArray = Column.split(",");
 
 		PortPropagationContext exclOrderID2 = PortPropagationContextFactory.getContextForExcludeColsFromAll(strArray); // exclude
@@ -279,6 +283,8 @@ public class ZipperTable extends Base {
         //将router组件分组输出到表达式组件
 
         RowSet outRS = routerOutputSet.getRowSet( "Data_UDs" );
+        RowSet Data_Inserts = null;
+        RowSet expData_UDs = null;
         if (outRS != null){
         	List<TransformField> Exp =  new ArrayList<TransformField>();;
         	String exp1 = "date/time(10, 0) DW_END_DT = ADD_TO_DATE ( sysdate, 'DD', -1 )";
@@ -293,7 +299,7 @@ public class ZipperTable extends Base {
     		Exp.add(outField2);
     		Exp.add(outField3);
     		Exp.add(outField4);
-        	RowSet expData_UDs = (RowSet) helper
+        	expData_UDs = (RowSet) helper
 			.expression(outRS, Exp, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm")+"_UDs")
 			.getRowSets().get(0);
 
@@ -303,25 +309,45 @@ public class ZipperTable extends Base {
         
         if (outRS != null){
         	
-        	List<TransformField> Exp =  new ArrayList<TransformField>();;
-        	String exp1 = "date/time(10, 0) DW_END_DT = to_date('2999-12-31','YYYY-MM-DD')";
-    		String exp2 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
-    		String exp3 = "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
-    		String exp4 = "integer(10, 0) falg = 0";
+        	List<TransformField> Exp =  new ArrayList<TransformField>();
+        	String exp1 = "date/time(29, 9) DW_START_DT = SYSDATE";
+        	String exp2 = "date/time(10, 0) DW_END_DT = to_date('2999-12-31','YYYY-MM-DD')";
+    		String exp3 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
+    		String exp4= "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
+    		String exp5 = "integer(10, 0) falg = 0";
     		TransformField outField1 = new TransformField(exp1);
     		TransformField outField2 = new TransformField(exp2);
     		TransformField outField3 = new TransformField(exp3);
     		TransformField outField4 = new TransformField(exp4);
+    		TransformField outField5 = new TransformField(exp5);
     		Exp.add(outField1);
     		Exp.add(outField2);
     		Exp.add(outField3);
     		Exp.add(outField4);
-        	RowSet Data_Inserts = (RowSet) helper
+    		Exp.add(outField5);
+        	Data_Inserts = (RowSet) helper
 			.expression(outRS, Exp, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm")+"_Inserts")
 			.getRowSets().get(0);
 
         	
         }
+        
+        
+        String[] PortNm = {"DW_START_DT2"};
+        PortPropagationContext IgnorPort = PortPropagationContextFactory.getContextForExcludeColsFromAll(PortNm);
+        TransformField FieldR = null;
+        InputSet Inp_Data = new InputSet(Data_Inserts, IgnorPort);
+        
+        RowSet Data_Inserts_R = (RowSet) helper
+    			.expression(Inp_Data, FieldR, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm")+"_Inserts_R")
+    			.getRowSets().get(0);
+        
+        
+        RowSet Union = (RowSet) helper
+        		.union(Data_Inserts_R, expData_UDs, "123");
+
+        
+        
 		
 
 		RowSet filterRS = (RowSet) helper.updateStrategy(expRowSet2, "IIF(DW_OPER_FLAG = 2,DD_REJECT, DD_UPDATE)",
