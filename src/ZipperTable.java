@@ -17,6 +17,9 @@ import com.informatica.powercenter.sdk.mapfwk.connection.ConnectionProperties;
 import com.informatica.powercenter.sdk.mapfwk.connection.ConnectionPropsConstants;
 import com.informatica.powercenter.sdk.mapfwk.connection.SourceTargetType;
 import com.informatica.powercenter.sdk.mapfwk.core.DSQTransformation;
+import com.informatica.powercenter.sdk.mapfwk.core.Field;
+import com.informatica.powercenter.sdk.mapfwk.core.FieldKeyType;
+import com.informatica.powercenter.sdk.mapfwk.core.FieldType;
 import com.informatica.powercenter.sdk.mapfwk.core.IOutputField;
 import com.informatica.powercenter.sdk.mapfwk.core.InputSet;
 import com.informatica.powercenter.sdk.mapfwk.core.Mapping;
@@ -33,6 +36,7 @@ import com.informatica.powercenter.sdk.mapfwk.core.TaskProperties;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformField;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformGroup;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformHelper;
+import com.informatica.powercenter.sdk.mapfwk.core.TransformationDataTypes;
 import com.informatica.powercenter.sdk.mapfwk.core.TransformationProperties;
 import com.informatica.powercenter.sdk.mapfwk.core.Workflow;
 import com.informatica.powercenter.sdk.mapfwk.portpropagation.PortPropagationContext;
@@ -60,7 +64,7 @@ public class ZipperTable extends Base {
 	protected void createSources() {
 		ordersSource = this.CreateZipper(
 				"O_" + org.tools.GetProperties.getKeyValue("System") + "_"
-						+ org.tools.GetProperties.getKeyValue("TableNm"),
+						+ org.tools.GetProperties.getKeyValue("TableNm") + "_H",
 				org.tools.GetProperties.getKeyValue("TDFolder"), "TD");
 		folder.addSource(ordersSource);
 		orderDetailsSource = this.CreateZipper(org.tools.GetProperties.getKeyValue("TableNm"),
@@ -74,7 +78,7 @@ public class ZipperTable extends Base {
 	protected void createTargets() {
 		outputTarget = this.createRelationalTarget(SourceTargetType.Teradata,
 				"O_" + org.tools.GetProperties.getKeyValue("System") + "_"
-						+ org.tools.GetProperties.getKeyValue("TableNm").toUpperCase());
+						+ org.tools.GetProperties.getKeyValue("TableNm").toUpperCase() + "_H");
 	}
 
 	protected void createMappings() throws Exception {
@@ -92,33 +96,29 @@ public class ZipperTable extends Base {
 
 		RowSet SouSQ = (RowSet) helper.sourceQualifier(ordersSource).getRowSets().get(0);
 		//
-		
-		
+
 		// 增加MD5
-				ArrayList<String> AllPort = new ArrayList<String>();
+		ArrayList<String> AllPort = new ArrayList<String>();
 
-				for (int i = 0; i < TableConf.size(); i++) {
-					if (TableConf.get(i).get(0).equals(org.tools.GetProperties.getKeyValue("TableNm"))) {
-						AllPort.add(TableConf.get(i).get(1));
-					}
+		for (int i = 0; i < TableConf.size(); i++) {
+			if (TableConf.get(i).get(0).equals(org.tools.GetProperties.getKeyValue("TableNm"))) {
+				AllPort.add(TableConf.get(i).get(1));
+			}
 
-				}
-				List<TransformField> transFieldsMD5 = new ArrayList<TransformField>();
-				String expMD5 = "string(50, 0) MD5ALL = md5(" + AllPort.toString().replace("[", "").replace("]", "").replace(",", "||") + ")";
-				TransformField outFieldMD5 = new TransformField(expMD5);
-				transFieldsMD5.add(outFieldMD5);
+		}
+		List<TransformField> transFieldsMD5 = new ArrayList<TransformField>();
+		String expMD5 = "string(50, 0) MD5ALL = md5("
+				+ AllPort.toString().replace("[", "").replace("]", "").replace(",", "||") + ")";
+		TransformField outFieldMD5 = new TransformField(expMD5);
+		transFieldsMD5.add(outFieldMD5);
 
-				RowSet expRowSetMD5_S = (RowSet) helper
-						.expression(SouSQ, transFieldsMD5, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm")+"md5_S")
-						.getRowSets().get(0);
-				
-				RowSet expRowSetMD5_T = (RowSet) helper
-						.expression(TagSQ, transFieldsMD5, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm")+"md5_T")
-						.getRowSets().get(0);
-				
-				
+		RowSet expRowSetMD5_S = (RowSet) helper
+				.expression(SouSQ, transFieldsMD5, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm") + "md5_S")
+				.getRowSets().get(0);
 
-				
+		RowSet expRowSetMD5_T = (RowSet) helper
+				.expression(TagSQ, transFieldsMD5, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm") + "md5_T")
+				.getRowSets().get(0);
 
 		// 将md5之后进来的数据进行排序
 		String IDColunmNM = org.tools.GetProperties.getKeyValue("IDColunmNM");
@@ -126,12 +126,12 @@ public class ZipperTable extends Base {
 		RowSet TagSort = helper.sorter(expRowSetMD5_T, new String[] { IDColunmNM }, new boolean[] { false },
 				"SRT_" + org.tools.GetProperties.getKeyValue("TableNm")).getRowSets().get(0);
 
-		RowSet SouSort = helper.sorter(expRowSetMD5_S, new String[] { IDColunmNM }, new boolean[] { false }, "SRT_" + "O_"
-				+ org.tools.GetProperties.getKeyValue("System") + "_" + org.tools.GetProperties.getKeyValue("TableNm"))
+		RowSet SouSort = helper.sorter(expRowSetMD5_S, new String[] { IDColunmNM }, new boolean[] { false },
+				"SRT_" + "O_" + org.tools.GetProperties.getKeyValue("System") + "_"
+						+ org.tools.GetProperties.getKeyValue("TableNm") + "_H")
 				.getRowSets().get(0);
 
 		InputSet SouInputSet = new InputSet(SouSort);
-		
 
 		// Join Pipeline-1 to Pipeline-2
 		List<InputSet> inputSets = new ArrayList<InputSet>();
@@ -154,10 +154,6 @@ public class ZipperTable extends Base {
 		// String expr = "integer(1,0) DW_OPER_FLAG = 1";
 		// TransformField outField = new TransformField( expr );
 		// transFields.add( outField );
-		
-		
-
-        	
 
 		String Column = "";
 		for (int i = 0; i < TableConf.size(); i++) {
@@ -230,32 +226,30 @@ public class ZipperTable extends Base {
 
 			}
 		}
-		
+
 		String exp = "date/time(29,9) DW_START_DT_out = DW_START_DT";
 		TransformField outField = new TransformField(exp);
 		transFields.add(outField);
 		// String[] toBeStored = Column.toArray(new String[Column.size()]);
 
-//		String exp1 = "date/time(10, 0) DW_END_DT = ADD_TO_DATE ( sysdate, 'DD', -1 )";
-//		String exp2 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
-//		String exp3 = "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
-//		TransformField outField1 = new TransformField(exp1);
-//		TransformField outField2 = new TransformField(exp2);
-//		TransformField outField3 = new TransformField(exp3);
-//		transFields.add(outField1);
-//		transFields.add(outField2);
-//		transFields.add(outField3);
+		// String exp1 = "date/time(10, 0) DW_END_DT = ADD_TO_DATE ( sysdate,
+		// 'DD', -1 )";
+		// String exp2 = "date/time(10, 0) DW_ETL_DT =
+		// to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
+		// String exp3 = "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
+		// TransformField outField1 = new TransformField(exp1);
+		// TransformField outField2 = new TransformField(exp2);
+		// TransformField outField3 = new TransformField(exp3);
+		// transFields.add(outField1);
+		// transFields.add(outField2);
+		// transFields.add(outField3);
 
 		TransformField totalOrderCost = null;
 		// new TransformField(
 		// "decimal(24,0) TotalOrderCost = OrderCost + Freight");
 
-		RowSet expRowSet = (RowSet) helper
-				.expression(joinRowSet, transFields, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm"))
-				.getRowSets().get(0);
-
 		String[] strArray = null;
-		Column = Column+",MD5ALL,IN_MD5ALL,DW_START_DT";
+		Column = Column + ",MD5ALL,IN_MD5ALL,falg";
 		strArray = Column.split(",");
 
 		PortPropagationContext exclOrderID2 = PortPropagationContextFactory.getContextForExcludeColsFromAll(strArray); // exclude
@@ -265,92 +259,137 @@ public class ZipperTable extends Base {
 																														// to
 																														// target
 
-		InputSet joinInputSet2 = new InputSet(expRowSet, exclOrderID2);
-
-		RowSet expRowSet2 = (RowSet) helper.expression(joinInputSet2, totalOrderCost,
-				"EXP_" + org.tools.GetProperties.getKeyValue("TableNm") + "1").getRowSets().get(0);
-		
-		
-		//增加router组件
+		// 增加router组件
 		List<TransformGroup> transformGrps = new ArrayList<TransformGroup>();
-        TransformGroup transGrp = new TransformGroup( "Data_UDs", "isnull(ID) or (ID=IN_ID AND MD5ALL != IN_MD5ALL)" );
-        transformGrps.add( transGrp );
-        transGrp = new TransformGroup( "Data_Inserts", "isnull(IN_ID) or (ID=IN_ID AND MD5ALL != IN_MD5ALL)" );
-        transformGrps.add( transGrp );
-        OutputSet routerOutputSet = helper.router( expRowSet2, transformGrps,
-                "RTR_"+ org.tools.GetProperties.getKeyValue("TableNm"));
-        
-        //将router组件分组输出到表达式组件
+		TransformGroup transGrp = new TransformGroup("Data_UDs", "isnull(ID) or (ID=IN_ID AND MD5ALL != IN_MD5ALL)");
+		transformGrps.add(transGrp);
+		transGrp = new TransformGroup("Data_Inserts", "isnull(IN_ID) or (ID=IN_ID AND MD5ALL != IN_MD5ALL)");
+		transformGrps.add(transGrp);
+		OutputSet routerOutputSet = helper.router(joinRowSet, transformGrps,
+				"RTR_" + org.tools.GetProperties.getKeyValue("TableNm"));
 
-        RowSet outRS = routerOutputSet.getRowSet( "Data_UDs" );
-        RowSet Data_Inserts = null;
-        RowSet expData_UDs = null;
-        if (outRS != null){
-        	List<TransformField> Exp =  new ArrayList<TransformField>();;
-        	String exp1 = "date/time(10, 0) DW_END_DT = ADD_TO_DATE ( sysdate, 'DD', -1 )";
-    		String exp2 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
-    		String exp3 = "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
-    		String exp4 = "integer(10, 0) falg = 1";
-    		TransformField outField1 = new TransformField(exp1);
-    		TransformField outField2 = new TransformField(exp2);
-    		TransformField outField3 = new TransformField(exp3);
-    		TransformField outField4 = new TransformField(exp4);
-    		Exp.add(outField1);
-    		Exp.add(outField2);
-    		Exp.add(outField3);
-    		Exp.add(outField4);
-        	expData_UDs = (RowSet) helper
-			.expression(outRS, Exp, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm")+"_UDs")
-			.getRowSets().get(0);
+		// 将router组件分组输出到表达式组件
 
-        	
-        }
-        outRS = routerOutputSet.getRowSet( "Data_Inserts" );
-        
-        if (outRS != null){
-        	
-        	List<TransformField> Exp =  new ArrayList<TransformField>();
-        	String exp1 = "date/time(29, 9) DW_START_DT = SYSDATE";
-        	String exp2 = "date/time(10, 0) DW_END_DT = to_date('2999-12-31','YYYY-MM-DD')";
-    		String exp3 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
-    		String exp4= "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
-    		String exp5 = "integer(10, 0) falg = 0";
-    		TransformField outField1 = new TransformField(exp1);
-    		TransformField outField2 = new TransformField(exp2);
-    		TransformField outField3 = new TransformField(exp3);
-    		TransformField outField4 = new TransformField(exp4);
-    		TransformField outField5 = new TransformField(exp5);
-    		Exp.add(outField1);
-    		Exp.add(outField2);
-    		Exp.add(outField3);
-    		Exp.add(outField4);
-    		Exp.add(outField5);
-        	Data_Inserts = (RowSet) helper
-			.expression(outRS, Exp, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm")+"_Inserts")
-			.getRowSets().get(0);
+		RowSet outRS = routerOutputSet.getRowSet("Data_UDs");
+		RowSet expData_Ins = null;
+		RowSet expData_Ups = null;
+		ArrayList<String> TagCloumn = new ArrayList<String>();
+		ArrayList<String> SouCloumn = new ArrayList<String>();
+		if (outRS != null) {
 
-        	
-        }
-        
-        
-        String[] PortNm = {"DW_START_DT2"};
-        PortPropagationContext IgnorPort = PortPropagationContextFactory.getContextForExcludeColsFromAll(PortNm);
-        TransformField FieldR = null;
-        InputSet Inp_Data = new InputSet(Data_Inserts, IgnorPort);
-        
-        RowSet Data_Inserts_R = (RowSet) helper
-    			.expression(Inp_Data, FieldR, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm")+"_Inserts_R")
-    			.getRowSets().get(0);
-        
-        
-        RowSet Union = (RowSet) helper
-        		.union(Data_Inserts_R, expData_UDs, "123");
+			for (int i = 0; i < outRS.size(); i++) {
 
-        
-        
-		
+				if (!outRS.getFields().get(i).getName().toString().substring(0, 3).equals("IN_")) {
 
-		RowSet filterRS = (RowSet) helper.updateStrategy(expRowSet2, "IIF(DW_OPER_FLAG = 2,DD_REJECT, DD_UPDATE)",
+					TagCloumn.add(outRS.getFields().get(i).getName().toString());
+				}
+
+			}
+			TagCloumn.add("IN_MD5ALL1");
+			TagCloumn.remove(0);
+			String Port[] = TagCloumn.toArray(new String[TagCloumn.size()]);
+			;
+
+			PortPropagationContext INPort = PortPropagationContextFactory.getContextForExcludeColsFromAll(Port);
+			TransformField a = null;
+
+			expData_Ups = (RowSet) helper.expression(new InputSet(outRS, INPort), a,
+					"EXP_" + org.tools.GetProperties.getKeyValue("TableNm") + "_Ups").getRowSets().get(0);
+
+		}
+		outRS = routerOutputSet.getRowSet("Data_Inserts");
+
+		if (outRS != null) {
+
+			for (int i = 0; i < outRS.size(); i++) {
+				if (outRS.getFields().get(i).getName().toString().substring(0, 3).equals("IN_")) {
+					SouCloumn.add(outRS.getFields().get(i).getName().toString());
+				}
+			}
+			SouCloumn.add("MD5ALL2");
+			SouCloumn.add("DW_START_DT2");
+			String Port[] = SouCloumn.toArray(new String[SouCloumn.size()]);
+			;
+
+			PortPropagationContext TagPort = PortPropagationContextFactory.getContextForExcludeColsFromAll(Port);
+			TransformField a = null;
+
+			expData_Ins = (RowSet) helper.expression(new InputSet(outRS, TagPort), a,
+					"EXP_" + org.tools.GetProperties.getKeyValue("TableNm") + "_Ins").getRowSets().get(0);
+
+		}
+
+		// 为Insert的Express增加DW字段
+
+		List<TransformField> Exp = new ArrayList<TransformField>();
+		String exp1 = "date/time(10, 9) DW_START_DT = SYSDATE";
+		String exp2 = "date/time(10, 0) DW_END_DT = to_date('2999-12-31','YYYY-MM-DD')";
+		String exp3 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
+		String exp4 = "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
+		String exp5 = "integer(10, 0) falg = 0";
+		TransformField outField1 = new TransformField(exp1);
+		TransformField outField2 = new TransformField(exp2);
+		TransformField outField3 = new TransformField(exp3);
+		TransformField outField4 = new TransformField(exp4);
+		TransformField outField5 = new TransformField(exp5);
+		Exp.add(outField1);
+		Exp.add(outField2);
+		Exp.add(outField3);
+		Exp.add(outField4);
+		Exp.add(outField5);
+
+		RowSet expData_Ins_Dw = (RowSet) helper
+				.expression(expData_Ins, Exp, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm") + "_Ins2")
+				.getRowSets().get(0);
+
+		List<TransformField> Exp2 = new ArrayList<TransformField>();
+		exp1 = "date/time(10, 0) DW_END_DT = ADD_TO_DATE ( sysdate, 'DD', -1 )";
+		exp2 = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
+		exp3 = "date/time(19, 0) DW_UPD_TM = SESSSTARTTIME";
+		exp4 = "integer(10, 0) falg = 1";
+		outField1 = new TransformField(exp1);
+		outField2 = new TransformField(exp2);
+		outField3 = new TransformField(exp3);
+		outField4 = new TransformField(exp4);
+		Exp2.add(outField1);
+		Exp2.add(outField2);
+		Exp2.add(outField3);
+		Exp2.add(outField4);
+
+		RowSet expData_Ups_Dw = (RowSet) helper
+				.expression(expData_Ups, Exp2, "EXP_" + org.tools.GetProperties.getKeyValue("TableNm") + "_Ups2")
+				.getRowSets().get(0);
+
+		// String[] PortNm = { "DW_START_DT_out2" };
+		// PortPropagationContext IgnorPort =
+		// PortPropagationContextFactory.getContextForExcludeColsFromAll(PortNm);
+		// TransformField FieldR = null;
+		// InputSet Inp_Data = new InputSet(Data_Inserts, IgnorPort);
+		//
+		// RowSet Data_Inserts_R = (RowSet) helper
+		// .expression(Inp_Data, FieldR, "EXP_" +
+		// org.tools.GetProperties.getKeyValue("TableNm") + "_Inserts_R")
+		// .getRowSets().get(0);
+
+		List<InputSet> UninputSets = new ArrayList<InputSet>();
+		UninputSets.add(new InputSet(expData_Ins_Dw));
+		UninputSets.add(new InputSet(expData_Ups_Dw));
+		//
+		RowSet UnionSet = (RowSet) helper
+				.union(UninputSets, expData_Ins_Dw, "UNI_" + org.tools.GetProperties.getKeyValue("TableNm"))
+				.getRowSets().get(0);
+
+		RowSet SortFlag = (RowSet) helper
+				.sorter(UnionSet, "falg", false, "SOR_" + org.tools.GetProperties.getKeyValue("TableNm") + "_2")
+				.getRowSets().get(0);
+
+		// String[] IgnorFlag = {"flag"};
+		// PortPropagationContext PropagationFlag =
+		// PortPropagationContextFactory.getContextForExcludeColsFromAll(IgnorFlag);
+
+		InputSet InpSetUpd = new InputSet(joinRowSet);
+
+		RowSet filterRS = (RowSet) helper.updateStrategy(SortFlag, "iif(falg=0,DD_INSERT,DD_UPDATE)",
 				"UPD_" + org.tools.GetProperties.getKeyValue("TableNm")).getRowSets().get(0);
 
 		// write to target
@@ -385,10 +424,10 @@ public class ZipperTable extends Base {
 				if (joinerTrans.validateRunMode(args[0])) {
 					ArrayList<String> a = GetTableList();
 					org.tools.DelXmlFolder.delAllFile("D:\\workspace\\Uoo\\xml\\");
-//					for (int i = 0; i < a.size(); i++) {
-//						org.tools.GetProperties.writeProperties("TableNm", a.get(i));
+					for (int i = 0; i < a.size(); i++) {
+						org.tools.GetProperties.writeProperties("TableNm", a.get(i));
 						joinerTrans.execute();
-//					}
+					}
 				}
 			} else {
 				joinerTrans.printUsage();
@@ -466,8 +505,9 @@ public class ZipperTable extends Base {
 
 		ConnectionInfo SrcConTD = new ConnectionInfo(SourceTargetType.Teradata_PT_Connection);
 		SrcConTD.setConnectionVariable("$DBConnection_TD_E");
-		DSQTransformation Tdsq = (DSQTransformation) mapping.getTransformation("SQ_" + "O_"
-				+ org.tools.GetProperties.getKeyValue("System") + "_" + org.tools.GetProperties.getKeyValue("TableNm"));
+		DSQTransformation Tdsq = (DSQTransformation) mapping
+				.getTransformation("SQ_" + "O_" + org.tools.GetProperties.getKeyValue("System") + "_"
+						+ org.tools.GetProperties.getKeyValue("TableNm") + "_H");
 		session.addConnectionInfoObject(Tdsq, SrcConTD);
 		// session.addConnectionInfoObject(jobSourceObj, newSrcCon);
 		session.setTaskInstanceProperty("REUSABLE", "YES");

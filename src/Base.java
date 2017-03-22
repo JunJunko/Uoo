@@ -1195,9 +1195,9 @@ public abstract class Base {
 		FieldKeyType ColType = null;
 		Boolean NullEable = null;
 		for (int i = 0; i < TableConf.size(); i++) {
-			a = (List) TableConf.get(i);
+			a = (List<String>) TableConf.get(i);
 			// TableList.add(a);
-			if (a.get(0).equals(TableNm.replace("O_" + org.tools.GetProperties.getKeyValue("System") + "_", ""))) {
+			if (a.get(0).equals(TableNm.replace("O_" + org.tools.GetProperties.getKeyValue("System") + "_", "").replace("_H", ""))) {
 				// TableList.add(a);
 				String pattern = ".*?\\((.*?)\\).*?";
 				// 创建 Pattern 对象
@@ -1226,7 +1226,7 @@ public abstract class Base {
 				// System.out.println(a.get(3).toString().trim().equals("PI")+
 				// a.get(3).toString().trim());
 				if (a.get(3).toString().trim().equals("PI")
-						|| a.get(1).toString().trim().equals(org.tools.GetProperties.getKeyValue("IDColunmNM"))) {
+						|| a.get(1).toString().trim().equals("ID")) {
 					ColType = FieldKeyType.PRIMARY_KEY;
 					NullEable = true;
 				} else {
@@ -1252,8 +1252,8 @@ public abstract class Base {
 		}
 		if (DbType.equals("TD")){
 			Field field = new Field("DW_START_DT", "DW_START_DT", "",
-					NativeDataTypes.Teradata.DECIMAL, "10", "0", FieldKeyType.NOT_A_KEY, FieldType.SOURCE,
-					false);
+					NativeDataTypes.Teradata.DATE, "10", "0", FieldKeyType.PRIMARY_KEY, FieldType.SOURCE,
+					true);
 			fields.add(field);
 			
 		}
