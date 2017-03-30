@@ -70,8 +70,9 @@ public class CallPmrepCom {
 			for (int i = 0; i < FN.size(); i++){
 //				writeLog("D:\\software\\Informatica\\9.6.1\\clients\\PowerCenterClient\\client\\bin\\pmrep objectImport -i F:\\shsnc\\项目\\无限极\\import_xml\\0302\\全删全插\\"+FN.get(i)+" -c F:\\shsnc\\项目\\无限极\\import_xml\\0302\\全删全插\\sample_import_controlfile.xml\r");
 				writeLog("D:\\software\\Informatica\\9.6.1\\clients\\PowerCenterClient\\client\\bin\\pmrep objectImport -i D:\\workspace\\Uoo\\xml\\"+FN.get(i)+" -c D:\\workspace\\Uoo\\sample_import_controlfile.xml\r");
-
+           
 			}
+			System.out.println("Done!");
 	
 	}
 

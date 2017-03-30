@@ -87,16 +87,16 @@ public class ConFileContent {
 					// Matcher mo = pattern.matcher(line);
 
 					if (m.find()) {
-						String ReplaceStr = m.group(1).replace("2", "");
+						String ReplaceStr = m.group(1).replace("_out", "");
 //						 System.out.println(ReplaceStr);
 						System.out.println(ReplaceStr);
-						if (org.tools.RePlaceOG.OG().contains(ReplaceStr.replace("2", ""))) {
+						if (org.tools.RePlaceOG.OG().contains(ReplaceStr.replace("_out", ""))) {
 							 
-							Data.append(line.replaceAll(" NAME=\".*?\"", " NAME=\"" + ReplaceStr.replace("2", "") + "_OG" + "\""));
+							Data.append(line.replaceAll(" NAME=\".*?\"", " NAME=\"" + ReplaceStr.replace("_out", "") + "_OG" + "\""));
 							Data.append("\n");
 						} else {
 //							 System.out.println(ReplaceStr);
-							Data.append(line.replaceAll(" NAME=\".*?_out\"", " NAME=\"" + ReplaceStr.replace("2", "") + "\""));
+							Data.append(line.replaceAll(" NAME=\".*?_out\"", " NAME=\"" + ReplaceStr.replace("_out", "") + "\""));
 							Data.append("\n");
 						}
 						// }
@@ -125,7 +125,7 @@ public class ConFileContent {
 							Data.append(line.replaceAll(" TOFIELD=\".*?\"", " TOFIELD=\"" + ReplaceStr + "_OG" + "\""));
 							Data.append("\n");
 						}else{
-						Data.append(line.replaceAll("TOFIELD=\".*?2\"", "TOFIELD=\"" + ReplaceStr + "\""));
+						Data.append(line.replaceAll("TOFIELD=\".*?_out\"", "TOFIELD=\"" + ReplaceStr + "\""));
 						Data.append("\n");
 						}
 					} else {
@@ -168,7 +168,7 @@ public class ConFileContent {
 						"BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"timestamp\" KEYTYPE=\"NOT A KEY\" PRECISION=\"19\"",
 						"BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"date\" KEYTYPE=\"NOT A KEY\" PRECISION=\"10\"")
 //				.replace("\"Update else Insert\" VALUE=\"NO", "\"Update else Insert\" VALUE=\"YES")
-				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"")
+//				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"")
 				.replace("NAME=\"Sorter Cache Size\" VALUE=\"8388608\"", "NAME=\"Sorter Cache Size\" VALUE=\"auto\"")
 				.replace("<POWERMART", "<!DOCTYPE POWERMART SYSTEM \"powrmart.dtd\"><POWERMART")
 		// .replace("Expression DMO Tx\" REUSABLE=\"NO\"", "Expression DMO Tx\"

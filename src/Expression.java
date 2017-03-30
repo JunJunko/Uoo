@@ -79,6 +79,7 @@ public class Expression extends Base {
         setMapFileName( mapping );
         TransformHelper helper = new TransformHelper( mapping );
         // creating DSQ Transformation
+        System.out.println(employeeSrc);
         OutputSet outSet = helper.sourceQualifier( employeeSrc );
         RowSet dsqRS = (RowSet) outSet.getRowSets().get( 0 );
 

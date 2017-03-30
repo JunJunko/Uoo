@@ -1011,7 +1011,7 @@ public abstract class Base {
 		// System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\"
 		// VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 		org.tools.ConFileContent.writeLog(org.tools.ConFileContent
-				.ReplaceColumnNm("M_" + org.tools.GetProperties.getKeyValue("TableNm").toUpperCase() + ".xml"));
+				.ReplaceColumnNm("M_CHECK_"+org.tools.GetProperties.getKeyValue("System")+"_" + org.tools.GetProperties.getKeyValue("TableNm").toUpperCase() + ".xml"));
 	}
 
 	protected void setMapFileName(Mapping mapping) {
@@ -1118,7 +1118,7 @@ public abstract class Base {
 		for (int i = 0; i < TableConf.size(); i++) {
 			a = (List) TableConf.get(i);
 			// TableList.add(a);
-			if (a.get(0).equals(TableNm.replace("O_" + org.tools.GetProperties.getKeyValue("System") + "_", ""))) {
+			if (a.get(0).equals(TableNm.replace("O_" + org.tools.GetProperties.getKeyValue("System") + "_", "").replace("_CK", ""))) {
 				// TableList.add(a);
 				String pattern = ".*?\\((.*?)\\).*?";
 				// 创建 Pattern 对象
@@ -1146,37 +1146,37 @@ public abstract class Base {
 				// System.out.println(a.get(0).toString());
 				// System.out.println(a.get(3).toString().trim().equals("PI")+
 				// a.get(3).toString().trim());
-				if (a.get(3).toString().trim().equals("PI")
-						|| a.get(1).toString().trim().equals(org.tools.GetProperties.getKeyValue("IDColunmNM"))) {
-					ColType = FieldKeyType.PRIMARY_KEY;
-					NullEable = true;
-				} else {
-					ColType = FieldKeyType.NOT_A_KEY;
-					NullEable = false;
-				}
-//				 System.out.println(a.get(1).toString()+","+org.tools.DataTypeTrans.Trans(a.get(2),
-//						 "Mysql")+""+len+","+ precision);
+//				if (a.get(3).toString().trim().equals("PI")
+//						|| a.get(1).toString().trim().equals(org.tools.GetProperties.getKeyValue("IDColunmNM"))) {
+//					ColType = FieldKeyType.PRIMARY_KEY;
+//					NullEable = true;
+//				} else {
+//					ColType = FieldKeyType.NOT_A_KEY;
+//					NullEable = false;
+//				}
+				NullEable = false;
+				 System.out.println(a.get(1).toString()+","+org.tools.DataTypeTrans.Trans(a.get(2),
+						 "MSSQL")+""+len+","+ precision);
 				Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						org.tools.DataTypeTrans.Trans(a.get(2), DbType), len, precision, ColType, FieldType.SOURCE,
-						NullEable);
+						org.tools.DataTypeTrans.Trans(a.get(2), DbType), len, precision, FieldKeyType.NOT_A_KEY, FieldType.SOURCE,
+						false);
 
 				// Field OWNER=new
 				// Field("OWNER","OWNER","",NativeDataTypes.Oracle.VARCHAR2,"30","0",FieldKeyType.NOT_A_KEY,FieldType.SOURCE,false);
 
 				fields.add(field);
 				TableName = TableNm;
-				// System.out.println(DbType);
 			}
 		}
 
 		ConnectionInfo info = null;
-		if (DbType == "Oracle") {
+		if (DbType.equals("Oracle")) {
 			info = getRelationalConnInfo(SourceTargetType.Oracle, dbName);
 
 		} else if (DbType == "TD") {
 			info = getRelationalConnInfo(SourceTargetType.Teradata, dbName);
 		}else{
-			info = getRelationalConnInfo(SourceTargetType.ODBC, dbName);
+			info = getRelationalConnInfo(SourceTargetType.Microsoft_SQL_Server, dbName);
 		}
 		tabSource = new Source(TableName, TableName, "table", TableName, info);
 		// System.out.println(a.get(0).toString());
@@ -1233,10 +1233,10 @@ public abstract class Base {
 					ColType = FieldKeyType.NOT_A_KEY;
 					NullEable = false;
 				}
-//				 System.out.println(a.get(1).toString()+","+org.tools.DataTypeTrans.Trans(a.get(2),
-//						 "Mysql")+""+len+","+ precision);
+				 System.out.println(a.get(1).toString()+","+org.tools.DataTypeTrans.Trans(a.get(2),
+						 "Oracle")+""+len+","+ precision);
 				Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						org.tools.DataTypeTrans.Trans(a.get(2), DbType), len, precision, ColType, FieldType.SOURCE,
+						org.tools.DataTypeTrans.Trans(a.get(2), "Oracle"), len, precision, ColType, FieldType.SOURCE,
 						NullEable);
 				
 
@@ -1259,7 +1259,7 @@ public abstract class Base {
 		}
 
 		ConnectionInfo info = null;
-		if (DbType == "Oracle") {
+		if (DbType.equals("Oracle")) {
 			info = getRelationalConnInfo(SourceTargetType.Oracle, dbName);
 
 		} else if (DbType == "TD") {
