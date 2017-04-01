@@ -61,7 +61,7 @@ public class Check extends Base {
 		folder.addSource(ordersSource);
 		
 		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"),
-				org.tools.GetProperties.getKeyValue("SourceFolder"), "MSSQL");
+				org.tools.GetProperties.getKeyValue("SourceFolder"), "Mysql");
 		folder.addSource(orderDetailsSource);
 		System.out.println(orderDetailsSource);
 	}
@@ -98,7 +98,11 @@ public class Check extends Base {
 
 				for (int i = 0; i < TableConf.size(); i++) {
 					if (TableConf.get(i).get(0).equals(org.tools.GetProperties.getKeyValue("TableNm"))) {
-						AllPort.add(TableConf.get(i).get(1));
+						if(TableConf.get(i).get(2).substring(0, TableConf.get(i).get(2).toString().indexOf("(")).toUpperCase().equals("CHAR")){
+						AllPort.add("rtrim("+TableConf.get(i).get(1)+")");
+						}else{
+							AllPort.add(TableConf.get(i).get(1));
+						}
 					}
 
 				}

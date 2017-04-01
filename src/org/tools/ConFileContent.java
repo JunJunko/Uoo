@@ -70,7 +70,7 @@ public class ConFileContent {
 
 			String ConReg = ".*CONNECTOR.*"; // ÅÐ¶Ï×Ö·û´®ÖÐÊÇ·ñº¬ÓÐCONNECTOR
 			String Conregex = "TOFIELD=\"(.*?)_out\"";
-			String TransType = ".*FROMINSTANCE=\"UPD_.*";
+			String TransType = ".*FROMINSTANCE=\"FIT_.*";
 			String ExpType = ".*FROMINSTANCETYPE=\"Update Strategy\".*"; 
 
 			
