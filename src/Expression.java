@@ -65,7 +65,7 @@ public class Expression extends Base {
      */
     protected void createTargets() {
     	TdTarget =  this.createRelationalTarget( SourceTargetType.Teradata,
-                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase() );
+                "O_"+org.tools.GetProperties.getKeyValue("System")+"_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase()+"_H" );
     }
 
     public void createMappings() throws Exception {
@@ -78,20 +78,40 @@ public class Expression extends Base {
         OutputSet outSet = helper.sourceQualifier( employeeSrc );
         RowSet dsqRS = (RowSet) outSet.getRowSets().get( 0 );
 
+//        
+//        DW_START_DT   TITLE '开始日期' DATE FORMAT 'YYYY-MM-DD' NULL    ,
+//        DW_END_DT   TITLE '结束日期' DATE FORMAT 'YYYY-MM-DD' NULL    ,
+//        DW_ETL_DT   TITLE '翻牌日期' DATE FORMAT 'YYYY-MM-DD' NULL    ,
+//        DW_UPD_TM TIMESTAMP(0)  TITLE '更新时间'  DEFAULT CURRENT_TIMESTAMP(0)   
         
-        String expr = "integer(1,0) DW_OPER_FLAG = 1";
-        TransformField outField = new TransformField( expr );
+//        String expr = "integer(1,0) DW_OPER_FLAG = 1";
+//        TransformField outField = new TransformField( expr );
+//        
+//        String expr2 = "date/time(10, 0) DW_ETL_DT= to_date($$PRVS1D_CUR_DATE, 'yyyymmdd')";
+//        TransformField outField2 = new TransformField( expr2 );
+//        
+//        String expr3 = "date/time(19, 0) DW_UPD_TM= SESSSTARTTIME";
+//        TransformField outField3 = new TransformField( expr3 );
         
-        String expr2 = "date/time(10, 0) DW_ETL_DT= to_date($$PRVS1D_CUR_DATE, 'yyyymmdd')";
+      
+        
+        String expr2 = "date/time(10, 0) DW_START_DT= to_date('1990-01-01','YYYY-MM-DD')";
         TransformField outField2 = new TransformField( expr2 );
         
-        String expr3 = "date/time(19, 0) DW_UPD_TM= SESSSTARTTIME";
+        String expr3 = "date/time(10, 0) DW_END_DT= to_date('2999-12-31','YYYY-MM-DD')";
         TransformField outField3 = new TransformField( expr3 );
+        
+        String expr = "date/time(10, 0) DW_ETL_DT = to_date($$PRVS1D_CUR_DATE,'yyyymmdd')";
+        TransformField outField = new TransformField( expr );
+        
+        String expr4 = "date/time(19, 0) DW_UPD_TM= SESSSTARTTIME";
+        TransformField outField4 = new TransformField( expr4 );
         
         List<TransformField> transFields = new ArrayList<TransformField>();
         transFields.add( outField );
         transFields.add( outField2 );
         transFields.add( outField3 );
+        transFields.add( outField4 );
         RowSet expRS = (RowSet) helper.expression( dsqRS, transFields, "exp_transform" ).getRowSets()
                 .get( 0 );
 //        expRS.getField("YEAR_out").setName("YEAR11111");
@@ -149,7 +169,7 @@ private void setSourceTargetProperties() {
 
     protected void createSession() throws Exception {
 		// TODO Auto-generated method stub
-	session = new Session("S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(),
+	session = new Session("S_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "S_LARGE_"+org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(),
 		"This is session for Expression DMO Tx");
 	session.setMapping(this.mapping);
 	

@@ -1011,7 +1011,7 @@ public abstract class Base {
 		// System.out.println("<ATTRIBUTE NAME=\"Parameter Filename\"
 		// VALUE=\"$PMRootDir/EDWParam/edw.param\"/>");
 		org.tools.ConFileContent.writeLog(org.tools.ConFileContent
-				.ReplaceColumnNm("M_"+ org.tools.GetProperties.getKeyValue("TableNm").toUpperCase() + ".xml"));
+				.ReplaceColumnNm("M_CHECK_"+org.tools.GetProperties.getKeyValue("System")+"_"+ org.tools.GetProperties.getKeyValue("TableNm").toUpperCase() + "_CK.xml"));
 	}
 
 	protected void setMapFileName(Mapping mapping) {
@@ -1154,11 +1154,11 @@ public abstract class Base {
 					ColType = FieldKeyType.NOT_A_KEY;
 					NullEable = false;
 				}
-				NullEable = false;
+//				NullEable = false;
 				 System.out.println(a.get(1).toString()+","+org.tools.DataTypeTrans.Trans(a.get(2),
-						 "Mysql")+""+len+","+ precision);
+						 "MSSQL")+""+len+","+ precision);
 				Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						org.tools.DataTypeTrans.Trans(a.get(2), "Mysql"), len, precision, ColType, FieldType.SOURCE,
+						org.tools.DataTypeTrans.Trans(a.get(2), "MSSQL"), len, precision, ColType, FieldType.SOURCE,
 						NullEable);
 
 				// Field OWNER=new
@@ -1176,7 +1176,7 @@ public abstract class Base {
 		} else if (DbType == "TD") {
 			info = getRelationalConnInfo(SourceTargetType.Teradata, dbName);
 		}else{
-			info = getRelationalConnInfo(SourceTargetType.ODBC, dbName);
+			info = getRelationalConnInfo(SourceTargetType.Microsoft_SQL_Server, dbName);
 		}
 		tabSource = new Source(TableName, TableName, "table", TableName, info);
 		// System.out.println(a.get(0).toString());
@@ -1236,7 +1236,7 @@ public abstract class Base {
 				 System.out.println(a.get(1).toString()+","+org.tools.DataTypeTrans.Trans(a.get(2),
 						 "Oracle")+""+len+","+ precision);
 				Field field = new Field(a.get(1).toString(), a.get(1).toString(), "",
-						org.tools.DataTypeTrans.Trans(a.get(2), "Oracle"), len, precision, ColType, FieldType.SOURCE,
+						org.tools.DataTypeTrans.Trans(a.get(2), "Mysql"), len, precision, ColType, FieldType.SOURCE,
 						NullEable);
 				
 

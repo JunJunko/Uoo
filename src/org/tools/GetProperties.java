@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public class GetProperties {
 	
-	static String profilepath="wechat.properties"; 
+	static String profilepath="QQSURVEY.properties"; 
     private static Properties props = new Properties();   
     static {   
         try {   

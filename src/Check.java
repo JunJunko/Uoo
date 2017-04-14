@@ -61,7 +61,7 @@ public class Check extends Base {
 		folder.addSource(ordersSource);
 		
 		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"),
-				org.tools.GetProperties.getKeyValue("SourceFolder"), "Mysql");
+				org.tools.GetProperties.getKeyValue("SourceFolder"), "MSSQL");
 		folder.addSource(orderDetailsSource);
 		System.out.println(orderDetailsSource);
 	}
@@ -76,7 +76,7 @@ public class Check extends Base {
 	}
 
 	protected void createMappings() throws Exception {
-		mapping = new Mapping("M_CHECK_"+org.tools.GetProperties.getKeyValue("System")+"_" + org.tools.GetProperties.getKeyValue("TableNm").toUpperCase(), "mapping", "");
+		mapping = new Mapping("M_CHECK_"+org.tools.GetProperties.getKeyValue("System")+"_" + org.tools.GetProperties.getKeyValue("TableNm").toUpperCase()+"_CK", "mapping", "");
 
 		setMapFileName(mapping);
 		TransformHelper helper = new TransformHelper(mapping);

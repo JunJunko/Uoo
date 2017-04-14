@@ -60,7 +60,7 @@ public class JoinerMd5 extends Base {
 				org.tools.GetProperties.getKeyValue("TDFolder"), "TD");
 		folder.addSource(ordersSource);
 		orderDetailsSource = this.CreateCrm(org.tools.GetProperties.getKeyValue("TableNm"),
-				org.tools.GetProperties.getKeyValue("SourceFolder"), "Mysql");
+				org.tools.GetProperties.getKeyValue("SourceFolder"), "MSSQL");
 		folder.addSource(orderDetailsSource);
 	}
 

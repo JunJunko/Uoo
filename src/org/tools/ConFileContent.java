@@ -70,7 +70,7 @@ public class ConFileContent {
 
 			String ConReg = ".*CONNECTOR.*"; // ÅÐ¶Ï×Ö·û´®ÖÐÊÇ·ñº¬ÓÐCONNECTOR
 			String Conregex = "TOFIELD=\"(.*?)_out\"";
-			String TransType = ".*FROMINSTANCE=\"FIT_.*";
+			String TransType = ".*FROMINSTANCE=\"UPD_.*";
 			String ExpType = ".*FROMINSTANCETYPE=\"Update Strategy\".*"; 
 
 			
@@ -167,6 +167,12 @@ public class ConFileContent {
 				.replace(
 						"BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"timestamp\" KEYTYPE=\"NOT A KEY\" PRECISION=\"19\"",
 						"BUSINESSNAME=\"DW_ETL_DT\" DESCRIPTION=\"\" DATATYPE=\"date\" KEYTYPE=\"NOT A KEY\" PRECISION=\"10\"")
+				.replace(
+						"BUSINESSNAME=\"DW_START_DT\" DESCRIPTION=\"\" DATATYPE=\"timestamp\" KEYTYPE=\"NOT A KEY\" PRECISION=\"19\"",
+						"BUSINESSNAME=\"DW_START_DT\" DESCRIPTION=\"\" DATATYPE=\"date\" KEYTYPE=\"NOT A KEY\" PRECISION=\"10\"")
+				.replace(
+						"BUSINESSNAME=\"DW_END_DT\" DESCRIPTION=\"\" DATATYPE=\"timestamp\" KEYTYPE=\"NOT A KEY\" PRECISION=\"19\"",
+						"BUSINESSNAME=\"DW_END_DT\" DESCRIPTION=\"\" DATATYPE=\"date\" KEYTYPE=\"NOT A KEY\" PRECISION=\"10\"")
 //				.replace("\"Update else Insert\" VALUE=\"NO", "\"Update else Insert\" VALUE=\"YES")
 //				.replace("\"Treat source rows as\" VALUE=\"Insert\"", "\"Treat source rows as\" VALUE=\"Data driven\"")
 				.replace("NAME=\"Sorter Cache Size\" VALUE=\"8388608\"", "NAME=\"Sorter Cache Size\" VALUE=\"auto\"")
